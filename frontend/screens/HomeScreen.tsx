@@ -156,6 +156,7 @@ const HomeScreen = () => {
         <ScrollView horizontal showsHorizontalScrollIndicator={false} className='mt-4 pl-4'>
           {dates?.map((day, idx) => {
             const today = moment().format('ddd, Do MMM');
+            // @ts-ignore
             const outfit = savedOutfits[day.label] || (day.label === today && savedOutfits[today] ? savedOutfits[today] : null);
             return(
               <View className='mr-3'>
@@ -171,6 +172,9 @@ const HomeScreen = () => {
                     </View>
                   )}
                 </Pressable>
+                <Text className='text-xs text-center mt-1 text-gray-700'>
+                  {day.label}
+                </Text>
               </View>
             )
           })}
