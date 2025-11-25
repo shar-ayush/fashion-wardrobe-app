@@ -33,29 +33,29 @@ const {width, height} = Dimensions.get('window');
     },
   ];
   
-  // const popularItems = [
-  //   {
-  //     username: "Trisha Wushres",
-  //     profile: "https://randomuser.me/api/portraits/women/1.jpg",
-  //     image:
-  //       "https://res.cloudinary.com/db1ccefar/image/upload/v1753859289/skirt3_oanqxj.png",
-  //     itemName: "Floral Skirt",
-  //   },
-  //   {
-  //     username: "Anna Cris",
-  //     profile: "https://randomuser.me/api/portraits/women/2.jpg",
-  //     image:
-  //       "https://res.cloudinary.com/db1ccefar/image/upload/v1753975629/Untitled_design_3_syip4x.png",
-  //     itemName: "Mens Jeans",
-  //   },
-  //   {
-  //     username: "Isabella",
-  //     profile: "https://randomuser.me/api/portraits/women/3.jpg",
-  //     image:
-  //       "https://res.cloudinary.com/db1ccefar/image/upload/v1753975802/Untitled_design_11_p7t2us.png",
-  //     itemName: "Shoes",
-  //   },
-  // ];
+  const popularItems = [
+    {
+      username: "Trisha Wushres",
+      profile: "https://randomuser.me/api/portraits/women/1.jpg",
+      image:
+        "https://res.cloudinary.com/db1ccefar/image/upload/v1753859289/skirt3_oanqxj.png",
+      itemName: "Floral Skirt",
+    },
+    {
+      username: "Anna Cris",
+      profile: "https://randomuser.me/api/portraits/women/2.jpg",
+      image:
+        "https://res.cloudinary.com/db1ccefar/image/upload/v1753975629/Untitled_design_3_syip4x.png",
+      itemName: "Mens Jeans",
+    },
+    {
+      username: "Isabella",
+      profile: "https://randomuser.me/api/portraits/women/3.jpg",
+      image:
+        "https://res.cloudinary.com/db1ccefar/image/upload/v1753975802/Untitled_design_11_p7t2us.png",
+      itemName: "Shoes",
+    },
+  ];
   
   const initialStories = [
     {
@@ -83,6 +83,7 @@ const {width, height} = Dimensions.get('window');
       viewed: false,
     },
   ];
+
   
 
 const HomeScreen = () => {
@@ -207,6 +208,24 @@ const HomeScreen = () => {
             </Pressable>
           ))}
         </View>
+
+        <View className='flex-row justify-between items-center mt-6 px-4'>
+          <Text className='text-lg font-semibold'>Popular this week</Text>
+          <Text className='text-gray-500'>More</Text>
+        </View>
+
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} className='mt-4 pl-4'>
+          {popularItems?.map((item, idx) => (
+            <View key={idx} className='w-36 mr-4'>
+              <Image className='w-36 h-44 rounded-lg' source={{uri: item?.image}}/>
+              <View className='flex-row items-center mt-2'>
+                <Image className='w-6 h-6 rounded-full mr-2' source={{uri: item?.profile}}/>
+                <Text className='text-xs font-medium'>{item.username}</Text>
+              </View>
+              <Text className='text-xs text-gray-500 mt-1'>{item.itemName}</Text>
+            </View>
+          ))}
+        </ScrollView>
       </ScrollView>
     </SafeAreaView>
   )
