@@ -1,7 +1,9 @@
-import { Dimensions, StyleSheet, Text, Touchable, TouchableOpacity, View } from 'react-native'
+import { Dimensions, StyleSheet, Text, Image, TouchableOpacity, View } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { useRoute } from '@react-navigation/native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import Animated, { useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
+import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 
 const {width, height} =  Dimensions.get('window');
 
@@ -13,6 +15,41 @@ interface ClothingItem{
     type?: "pants" | "shoes" | "shirt" | "skirts" | "tops" | "mshirts";
     gender?: "m" | "f" | "unisex";
 }
+
+const DraggableClothingItem = ({item}: {item: ClothingItem}) => {
+    const translateX = useSharedValue(item?.x)
+    const translateY = useSharedValue(item?.y)
+
+    const panGesture = Gesture.Pan().onUpdate((e) => {
+        translateX.value = item.x + e.translationX;
+        translateY.value = item.y + e.translationY;
+    }).onEnd(() => {
+        item.x = translateX.value;
+        item.y = translateY.value;
+    });
+
+    const animatedStyle = useAnimatedStyle(() => ({
+        transform: [
+            {translateX: translateX.value},
+            {translateY: translateY.value},
+        ],
+        position: 'absolute',
+        zIndex: item.type === "shirt" || item.type === "skirts" ? 20 : 10,
+    }));
+
+    return (
+        <GestureDetector gesture={panGesture}>
+            <Animated.View style={animatedStyle}>
+                <Image 
+                style={{width:240, height: item?.type === 'shoes' ? 180 : 240}} 
+                source={{uri:item?.image}} 
+                resizeMode='contain'
+                />
+            </Animated.View>
+        </GestureDetector>
+    )
+}
+
 const DesignRoomScreen = () => {
     const route = useRoute();
     const {selectedItems, date, savedOutfits} = route.params as {
@@ -55,10 +92,22 @@ const DesignRoomScreen = () => {
         </TouchableOpacity>
       </View>
 
-      <View>
+      <View className='flex-1'>
         {clothes.map((item) => (
-            <DraggableClothingItem/>
+            <DraggableClothingItem key={item.id} item={item} />
         ))}
+      </View>
+
+      <View className='flex-row justify-between p-4'>
+        <TouchableOpacity className='bg-gray-700 p-2 rounded'>
+            <Text className='text-white'>Add Clothes</Text>
+        </TouchableOpacity>
+        <TouchableOpacity className='bg-gray-700 p-2 rounded'>
+            <Text className='text-white'>Stickers</Text>
+        </TouchableOpacity>
+        <TouchableOpacity className='bg-gray-700 p-2 rounded'>
+            <Text className='text-white'>Background</Text>
+        </TouchableOpacity>
       </View>
     </SafeAreaView>
   )
