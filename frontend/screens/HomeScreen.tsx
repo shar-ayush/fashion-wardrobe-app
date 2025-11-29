@@ -87,8 +87,8 @@ const {width, height} = Dimensions.get('window');
   
 
 const HomeScreen = () => {
-  const navigation = useNavigation();
-  const [savedOutfits, setSavedOutfits] = useState([]);
+  const navigation = useNavigation<any>();
+  const [savedOutfits, setSavedOutfits] = useState<Record<string, any>>({});
   const [stories, setStories] = useState(initialStories);
   const [showStory, setShowStory] = useState(false);
   const [currentStory, setCurrentStory] = useState<{
@@ -160,7 +160,14 @@ const HomeScreen = () => {
             const outfit = savedOutfits[day.label] || (day.label === today && savedOutfits[today] ? savedOutfits[today] : null);
             return(
               <View className='mr-3'>
-                <Pressable className={`h-40 w-24 rounded-xl items-center justify-center overflow-hidden shadow-md ${outfit ? 'bg-white' : 'bg-gray-50' }`}>
+                <Pressable 
+                onPress={() => {
+                  navigation.navigate("AddOutfit",{
+                    date: day.label,
+                    savedOutfits,
+                  })
+                }}
+                className={`h-40 w-24 rounded-xl items-center justify-center overflow-hidden shadow-md ${outfit ? 'bg-white' : 'bg-gray-50' }`}>
                   {!outfit && (
                     <View className='w-full h-full flex items-center justify-center'>
                       <Text className='text-3xl text-gray-400'>+</Text>
