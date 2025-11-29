@@ -26,6 +26,15 @@ const AddOutfitScreen = () => {
     const toggleSelect = (id:number) => {
         setSelected((prev) => prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]);
     }
+
+    const handleNext = () => {
+        const selectedItems = popularClothes.filter((item) => selected.includes(item?.id));
+        // @ts-ignore
+        navigation.navigate("DesignRoom",{
+            selectedItems,
+            date, savedOutfits
+        })
+    }
   return (
     <SafeAreaView className='flex-1 bg-white'>
       <View className='flex-row items-center justify-between px-4'>
@@ -95,7 +104,10 @@ const AddOutfitScreen = () => {
                     )
                 })}
             </ScrollView>
-            <TouchableOpacity className='bg-black py-3 rounded-lg mt-3 mb-3 items-center self-end w-24'>
+            <TouchableOpacity 
+            className='bg-black py-3 rounded-lg mt-3 mb-3 items-center self-end w-24'
+            onPress={handleNext}
+            >
                 <Text className='text-white font-semibold'>Next</Text>
             </TouchableOpacity>
         </View>
