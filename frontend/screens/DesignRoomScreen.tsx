@@ -1,6 +1,6 @@
 import { Dimensions, StyleSheet, Text, Image, TouchableOpacity, View } from 'react-native'
 import React, { useEffect, useState } from 'react'
-import { useRoute } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Animated, { useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
@@ -52,6 +52,7 @@ const DraggableClothingItem = ({item}: {item: ClothingItem}) => {
 
 const DesignRoomScreen = () => {
     const route = useRoute();
+    const navigation = useNavigation();
     const {selectedItems, date, savedOutfits} = route.params as {
         selectedItems: ClothingItem[],
         date: string,
@@ -87,7 +88,14 @@ const DesignRoomScreen = () => {
     <SafeAreaView className='flex-1 bg-black'>
       <View className='flex-row justify-between items-center p-4'>
         <Text className='text-white text-lg'>{date}</Text>
-        <TouchableOpacity className='bg-gray-700 p-2 rounded'>
+        <TouchableOpacity 
+        // @ts-ignore
+        onPress={() => navigation.navigate("NewOutfit",{
+            selectedItems,
+            date,
+            savedOutfits
+        })}
+        className='bg-gray-700 p-2 rounded'>
             <Text className='text-white'>Next</Text>
         </TouchableOpacity>
       </View>
