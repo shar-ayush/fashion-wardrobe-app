@@ -1,0 +1,25 @@
+# Node modules (backend)
+backend/node_modules/
+
+# Expo node_modules (frontend)
+frontend/node_modules/
+
+# Environment files
+*.env
+*.env.local
+
+# Build folders
+frontend/.expo/
+frontend/.expo-shared/
+frontend/build/
+backend/dist/
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+logs/
+
+# System files
+.DS_Store
+Thumbs.db
