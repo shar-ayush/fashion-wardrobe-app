@@ -10,6 +10,7 @@ const AddOutfitScreen = () => {
     const {date, savedOutfits} = route?.params as {date: string, savedOutfits: Record<string, any>};
     const navigation = useNavigation();
     const [selected, setSelected] = useState<number[]>([]);
+
     const popularClothes = [
         ...pants,
         ...mpants,
@@ -21,6 +22,10 @@ const AddOutfitScreen = () => {
         ...item,
         id: idx+1
     })).filter((item) => item.image);
+
+    const toggleSelect = (id:number) => {
+        setSelected((prev) => prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]);
+    }
   return (
     <SafeAreaView className='flex-1 bg-white'>
       <View className='flex-row items-center justify-between px-4'>
@@ -50,7 +55,11 @@ const AddOutfitScreen = () => {
         <Text className='text-lg font-semibold px-4 mt-4'>Popular Clothes</Text>
         <View className='flex-row flex-wrap px-4 mt-2 mb-20'>
             {popularClothes.map((item) => (
-                <TouchableOpacity className='w-1/3 p-1 relative '>
+                <TouchableOpacity 
+                className='w-1/3 p-1 relative '
+                onPress={() => toggleSelect(item?.id)}
+                >
+
                     <Image 
                     className="w-full h-32 rounded-md" 
                     source={{uri: item?.image}}
@@ -71,6 +80,26 @@ const AddOutfitScreen = () => {
             ))}
         </View>
       </ScrollView>
+
+      {selected.length > 0 && (
+        <View className='absolute bottom-0 left-0 right-0 bg-white p-3 border-t'>
+            <ScrollView horizontal showsHorizontalScrollIndicator={false} className=''>
+                {selected?.map((id) => {
+                    const item = popularClothes.find((cloth) => cloth.id === id);
+                    return(
+                        <Image 
+                        key={id}
+                        source={{uri:item?.image}}
+                        className='w-16 h-16 mr-3 rounded-md'
+                        />
+                    )
+                })}
+            </ScrollView>
+            <TouchableOpacity className='bg-black py-3 rounded-lg mt-3 mb-3 items-center self-end w-24'>
+                <Text className='text-white font-semibold'>Next</Text>
+            </TouchableOpacity>
+        </View>
+      )}
     </SafeAreaView>
   )
 }
