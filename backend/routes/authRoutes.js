@@ -1,6 +1,6 @@
 import express from 'express';
 import jwt from 'jsonwebtoken';
-import User from '../src/models/user';
+import User from './../src/models/user.js';
 import SavedOutfit from '../src/models/savedOutfit.js';
 
 const router = express.Router();
