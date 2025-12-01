@@ -1,16 +1,16 @@
-import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { Image, StyleSheet, Switch, Text, TextInput, TouchableOpacity, View } from 'react-native'
 import React, { useState } from 'react'
 import { useNavigation, useRoute } from '@react-navigation/native'
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 
-interface ClothingItem{
-    id: number;
-    image: string;
-    x: number;
-    y: number;
-    type?: "pants" | "shoes" | "shirt" | "skirts" | "tops" | "mshirts";
-    gender?: "m" | "f" | "unisex";
+interface ClothingItem {
+  id: number;
+  image: string;
+  x: number;
+  y: number;
+  type?: "pants" | "shoes" | "shirt" | "skirts" | "tops" | "mshirts";
+  gender?: "m" | "f" | "unisex";
 }
 
 
@@ -19,7 +19,7 @@ const NewOutfitScreen = () => {
   const { selectedItems, date, savedOutfits } = route.params as {
     selectedItems: ClothingItem[],
     date: string,
-    savedOutfits: {[key: string]: any},
+    savedOutfits: { [key: string]: any },
   };
 
   const navigation = useNavigation();
@@ -27,6 +27,7 @@ const NewOutfitScreen = () => {
   const [isOotd, setIsOotd] = useState<boolean>(false);
   const [occasion, setOccasion] = useState<string>("Work");
   const [loading, setLoading] = useState<boolean>(false);
+  const [visibility, setVisibility] = useState<string>("Everyone");
   // const [weather, setWeather] = useState<string>("Sunny");
 
   return (
@@ -39,24 +40,59 @@ const NewOutfitScreen = () => {
       </View>
 
       <View className='flex-1 items-center justify-center'>
-        {selectedItems?.sort((a,b) => {
-          const order = {"shirt": 1, "tops": 1, "mshirts": 1, "pants": 2, "skirts": 2, "shoes": 3};
+        {selectedItems?.sort((a, b) => {
+          const order = { "shirt": 1, "tops": 1, "mshirts": 1, "pants": 2, "skirts": 2, "shoes": 3 };
           return (order[a.type || "shirt"] || 0) - (order[b.type || "shirt"] || 0);
         })
-        .map((item,index) => (
-          <Image 
-          resizeMode='contain'
-          key={index}
-          source={{uri:item?.image}}
-          style={{
-            width:240, 
-            height: item?.type === 'shoes' ? 180 : 240,
-            marginBottom: index - (selectedItems.length -1) ? -60 : 0
-          }}
-          />
-        )
-      )}
+          .map((item, index) => (
+            <Image
+              resizeMode='contain'
+              key={index}
+              source={{ uri: item?.image }}
+              style={{
+                width: 240,
+                height: item?.type === 'shoes' ? 180 : 240,
+                marginBottom: index - (selectedItems.length - 1) ? -60 : 0
+              }}
+            />
+          )
+          )}
       </View>
+
+      <View className='p-4'>
+        <TextInput
+          className='border-b border-gray-300 pb-2 text-gray-500'
+          placeholder='Add a Caption...'
+          value={caption}
+          onChangeText={setCaption}
+        />
+
+        <View className='mt-4'>
+          <View className='flex-row items-center justify-between'>
+            <Text className='text-gray-500'>Date</Text>
+            <Text className='text-black'>{date || "Today"}</Text>
+          </View>
+
+          <View className='flex-row items-center justify-between mt-2'>
+            <Text className='text-gray-500'>Add to OOTD Story</Text>
+            <Switch value={isOotd} onValueChange={setIsOotd} />
+          </View>
+
+          <View className='flex-row items-center justify-between mt-2'>
+            <Text className='text-gray-500'>Occasion</Text>
+            <Text className='text-black'>{occasion}</Text>
+          </View>
+
+          <View className='flex-row items-center justify-between mt-2'>
+            <Text className='text-gray-500'>Visibility</Text>
+            <Text className='text-black'>{visibility}</Text>
+          </View>
+        </View>
+      </View>
+
+      <TouchableOpacity className='bg-black py-3 mx-4 mb-4 rounded'>
+        <Text className='text-white text-center font-semibold'>Save Outfit</Text>
+      </TouchableOpacity>
     </SafeAreaView>
   )
 }
