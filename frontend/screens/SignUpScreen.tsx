@@ -1,7 +1,8 @@
-import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
+import { Alert, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
 import React from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
+import useAuthStore from '../store/authStore';
 
 const SignUpScreen = () => {
     const navigation = useNavigation();
@@ -10,6 +11,20 @@ const SignUpScreen = () => {
     const [gender, setGender] = React.useState('');
     const [username, setUsername] = React.useState('');
     const [profileImage, setProfileImage] = React.useState('');
+    const {register} = useAuthStore();
+
+    const handleSignup = async () => {
+        if(!email || !password || !username ||  !gender){
+            Alert.alert('Error', 'Please fill all required fields');
+            return;
+        }
+        try {
+            await register(email, password, username, gender, profileImage);
+        } catch (error) {
+            Alert.alert('Error', 'Something went wrong during signup');
+        }
+    }
+
   return (
     <SafeAreaView className='flex-1 bg-white'>
                 <KeyboardAvoidingView 
@@ -63,7 +78,7 @@ const SignUpScreen = () => {
                             
                         />
     
-                        <TouchableOpacity className='bg-blue-500 p-3 rounded-lg mb-4'>
+                        <TouchableOpacity onPress={handleSignup} className='bg-blue-500 p-3 rounded-lg mb-4'>
                             <Text className='text-white text-center text-lg'>Sign Up</Text>
                         </TouchableOpacity>
     

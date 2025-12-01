@@ -1,5 +1,5 @@
 import { StyleSheet, Text, View } from 'react-native'
-import React from 'react'
+import React, { useEffect } from 'react'
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
 import TabNavigator from './TabNavigator';
 import AddOutfitScreen from '../screens/AddOutfitScreen';
@@ -7,10 +7,15 @@ import DesignRoomScreen from '../screens/DesignRoomScreen';
 import NewOutfitScreen from '../screens/NewOutfitScreen';
 import SignInScreen from '../screens/SignInScreen';
 import SignUpScreen from '../screens/SignUpScreen';
+import useAuthStore from '../store/authStore';
 
 const RootNavigator = () => {
   const Stack = createNativeStackNavigator();
-  const isAuthenticated = false; // Replace with actual authentication logic
+  const {isAuthenticated, initializeAuth} = useAuthStore(); 
+
+  useEffect(() => {
+    initializeAuth();
+  },[initializeAuth]);
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       {isAuthenticated ? (
