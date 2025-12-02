@@ -1,7 +1,7 @@
 import express from 'express';
 import jwt from 'jsonwebtoken';
 import User from './../src/models/user.js';
-import SavedOutfit from '../src/models/savedOutfit.js';
+import authenticateToken from '../src/middleware/authMiddleware.js';
 
 const router = express.Router();
 
@@ -64,6 +64,16 @@ router.post("/login", async(req,res) => {
     } catch (error) {
         console.log("Error in login route:", error);
         res.status(500).json({message: "Server error"});
+    }
+})
+
+router.get("/me", authenticateToken ,async(req, res) => {
+    try {
+        const user = await User.findById(req.user.id).select('-password');
+        if(!user) return res.status(404).json({message: "User not found"});
+        res.status(200).json(user);
+    } catch (error) {
+        res.status(500).json({message: "Server error in fetching user data"});
     }
 })
 
