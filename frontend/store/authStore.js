@@ -16,7 +16,7 @@ const useAuthStore = create(
         const token = await AsyncStorage.getItem("token");
         if (token) {
           set({ token, isAuthenticated: true });
-          // await useAuthStore.getState().fetchUser();
+          await useAuthStore.getState().fetchUser();
         }
       } catch (error) {
         console.error("Failed to initialize auth:", error);
@@ -42,7 +42,7 @@ const useAuthStore = create(
           isAuthenticated: true,
           loading: false,
         });
-        // await useAuthStore.getState().fetchUser();
+        await useAuthStore.getState().fetchUser();
       } catch (error) {
         console.error("Registration failed:", error);
         set({
@@ -67,7 +67,7 @@ const useAuthStore = create(
           isAuthenticated: true,
           loading: false,
         });
-        // await useAuthStore.getState().fetchUser();
+        await useAuthStore.getState().fetchUser();
       } catch (error) {
         console.error("Login failed:", error);
         set({
