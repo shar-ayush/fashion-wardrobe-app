@@ -5,6 +5,7 @@ import 'dotenv/config'
 // import {audioToAudio, HfInference} from '@huggingface/inference';
 
 import authRoutes from '../routes/authRoutes.js'
+import savedOutfitsRoutes from '../routes/savedOutfitsRoute.js';
 
 
 // Initialize Express app
@@ -20,7 +21,7 @@ app.use(express.urlencoded({ extended: true }));
 
 // Routes
 app.use("/api/auth", authRoutes);
-
+app.use("/api/", savedOutfitsRoutes);
 
 
 
