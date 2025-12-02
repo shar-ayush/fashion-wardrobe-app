@@ -94,7 +94,9 @@ const useAuthStore = create(
         const response = await axios.get(`${API_BASE_URL}/api/auth/me`, {
           headers: { Authorization: `Bearer ${token}` },
         });
-        set({ user: response.data.user, error: null });
+        // backend `/me` sometimes returns the user directly, other endpoints return { user: { ... } }
+        const fetchedUser = response.data?.user ?? response.data;
+        set({ user: fetchedUser, error: null });
       } catch (error) {
         console.error("Fetching user failed:", error);
         set({
