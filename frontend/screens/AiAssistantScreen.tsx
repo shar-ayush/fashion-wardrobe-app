@@ -1,4 +1,4 @@
-import { Linking, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
+import { ActivityIndicator, Linking, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
 import React, { useState } from 'react'
 import { useNavigation } from '@react-navigation/native'
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -130,6 +130,13 @@ const AiAssistantScreen = () => {
                         })}
                     </View>
                 ))}
+
+                {isLoading && (
+                    <View className='flex items-center mt-4'>
+                        <ActivityIndicator size={"large"} color="#1e90ff" />
+                        <Text className='text-gray-600 mt-2'>Fetching suggestions </Text>
+                    </View>
+                )}
             </ScrollView>
 
             <View className='p-4 bg-white border-t border-gray-200'>
@@ -156,7 +163,11 @@ const AiAssistantScreen = () => {
                     placeholderTextColor={"#999"}
                 />
 
-                <TouchableOpacity className={`ml-2 w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center`}>
+                <TouchableOpacity 
+                onPress={handleSend}
+                disabled={isLoading}
+                className={`ml-2 w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center`}
+                >
                     <Ionicons name='send' size={20} color={isLoading ? "#ccc" : "#fff"} />
                 </TouchableOpacity>
             </View>
