@@ -6,7 +6,7 @@ const savedOutfitSchema = new mongoose.Schema({
     items:[
         {
             id:Number,
-            type:{type:String, enum:["pants","tops","shoes","shirts","shirt","jackets","accessories"], required:true},
+            type:{type:String, enum:["pants","tops","shoes","skirts","shirt","jackets","accessories"], required:true},
             image:{ type:String, required:true},
             x:{ type:Number, default:0},
             y:{ type:Number, default:0}
