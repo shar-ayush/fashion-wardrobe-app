@@ -266,6 +266,7 @@ const HomeScreen = () => {
         <View className='flex-row flex-wrap justify-between px-4 mt-6'>
           {features.map((feature, idx) => (
             <Pressable
+              onPress={() => navigation.navigate(feature.screen)}
               style={{
                 backgroundColor: ["#FFF1F2", "#EFF6FF", "#F0FFF4", "#FFFBEB"][
                   idx % 4
