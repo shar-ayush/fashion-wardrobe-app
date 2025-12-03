@@ -9,6 +9,7 @@ import SignInScreen from '../screens/SignInScreen';
 import SignUpScreen from '../screens/SignUpScreen';
 import useAuthStore from '../store/authStore';
 import AiAssistantScreen from '../screens/AiAssistantScreen';
+import AiOutfitMakerScreen from '../screens/AiOutfitMakerScreen';
 
 const RootNavigator = () => {
   const Stack = createNativeStackNavigator();
@@ -26,6 +27,7 @@ const RootNavigator = () => {
           <Stack.Screen name="DesignRoom" component={DesignRoomScreen} />
           <Stack.Screen name="NewOutfit" component={NewOutfitScreen} />
           <Stack.Screen name="AIChat" component={AiAssistantScreen} />
+          <Stack.Screen name="AIOutfit" component={AiOutfitMakerScreen} />
         </>
       ) : (
         <>
