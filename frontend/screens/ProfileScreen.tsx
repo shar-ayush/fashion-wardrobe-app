@@ -5,7 +5,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import axios from 'axios';
 import { mpants, mshirts, pants, shoes, skirts, tops } from '../images';
-const API_BASE_URL = process.env.API_BASE_URL;
+const API_BASE_URL = process.env.EXPO_PUBLIC_API_BASE_URL;
 
 
 const ProfileScreen = () => {
@@ -29,12 +29,14 @@ const ProfileScreen = () => {
     ...shoes
   ]
 
+
+
   useEffect(() => {
     const fetchOutfits = async () => {
       if (!user._id || !token) return;
       setLoading(true);
       try {
-        const response = await axios.get(`${API_BASE_URL}/save-otfit/user/${user._id}`, {
+        const response = await axios.get(`${API_BASE_URL}/api/save-outfit/user/${user._id}`, {
           headers: {
             Authorization: `Bearer ${token}`
           }
@@ -62,6 +64,14 @@ const ProfileScreen = () => {
         return true;
     }
   })
+  // @ts-ignore
+  const sortItems = (items) => {
+    const order = ["shirt", "pants", "skirt", "shoes"];
+    // @ts-ignore
+    return items.sort((a, b) => order.indexOf(a.type) - order.indexOf(b.type));
+  }
+
+  console.log("Outfits:", outfits);
 
 
   return (
@@ -162,11 +172,28 @@ const ProfileScreen = () => {
             ) : outfits.length === 0 ? (
               <Text>No Outfits saved </Text>
             ) : (
-              <View>
+              <View className='flex-row flex-wrap'>
                 {outfits?.map((outfit) => (
-                  <View>
-                    <View>
-                        
+                  <View className='w-1/2 p-1.5'>
+                    <View 
+                    style={{
+                        shadowColor: "#000",
+                        shadowOffset: { width: 0, height: 2 },
+                        shadowOpacity: 0.1,
+                        shadowRadius: 4,
+                        elevation: 3,
+                      }}
+                    className='bg-white rounded-lg shadow-sm border border-gray-100'
+                    >
+                    {sortItems(outfit.items).map((item, index) => (
+                      <Image 
+                      key={`${outfit._id}-${item.id}-${index}`}
+                      source={{ uri: item.image }}
+                      className='w-full h-36'
+                      resizeMode='contain'
+                      style={{ marginVertical: -20 }}
+                      />
+                    ))}
                     </View>
                   </View>
                 ))}
