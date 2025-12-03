@@ -22,6 +22,11 @@ const ProfileScreen = () => {
   type Outfit = {
     _id?: string;
     items: ClothItem[];
+    caption?: string;
+    occassion?: string;
+    visibility?: string;
+    isOotd?: boolean;
+    date?: string;
   };
 
   const [outfits, setOutfits] = useState<Outfit[]>([]);
@@ -205,6 +210,14 @@ const ProfileScreen = () => {
                       style={{ marginVertical: -20 }}
                       />
                     ))}
+                    
+                    <View>
+                      <Text className='text-sm font-semibold text-gray-800'>{outfit?.date}</Text>
+                      <Text className='text-xs font-medium text-gray-600'>{outfit?.occassion}</Text>
+                      <Text className='text-sm text-gray-500 mt-1'>
+                        {outfit.items.map((item) => item.type).join(", ")}
+                      </Text>
+                    </View>
                     </View>
                   </View>
                 ))}
