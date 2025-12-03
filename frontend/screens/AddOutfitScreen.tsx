@@ -65,6 +65,7 @@ const AddOutfitScreen = () => {
         <View className='flex-row flex-wrap px-4 mt-2 mb-20'>
             {popularClothes.map((item) => (
                 <TouchableOpacity 
+                key={item.id}
                 className='w-1/3 p-1 relative '
                 onPress={() => toggleSelect(item?.id)}
                 >

@@ -5,7 +5,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { jwtDecode } from "jwt-decode";
 import axios from 'axios';
-const API_BASE_URL = "http://10.0.2.2:3000";
+const API_BASE_URL =  process.env.EXPO_PUBLIC_API_BASE_URL 
 
 interface ClothingItem {
   id: number;

@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-const API_BASE_URL = "http://10.0.2.2:3000";
+const API_BASE_URL = process.env.EXPO_PUBLIC_API_BASE_URL 
 
 const useAuthStore = create(
   (set) => ({

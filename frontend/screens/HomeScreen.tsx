@@ -127,7 +127,7 @@ const HomeScreen = () => {
 
         <ScrollView horizontal showsHorizontalScrollIndicator={false} className='mt-4 pl-4'>
           {stories?.map((story, idx) => (
-            <Pressable key={idx} className='items-center mr-4'>
+            <Pressable key={story.username || idx} className='items-center mr-4'>
               <View className={`w-16 h-16 rounded-full items-center justify-center relative ${
                 story.viewed
                 ? "border-2 border-gray-300"
@@ -159,7 +159,7 @@ const HomeScreen = () => {
             // @ts-ignore
             const outfit = savedOutfits[day.label] || (day.label === today && savedOutfits[today] ? savedOutfits[today] : null);
             return(
-              <View className='mr-3'>
+              <View key={day.label} className='mr-3'>
                 <Pressable 
                 onPress={() => {
                   navigation.navigate("AddOutfit",{
@@ -196,7 +196,7 @@ const HomeScreen = () => {
               ],
               elevation : 3,
             }}
-            key={idx} 
+            key={feature.title || idx} 
             className='w-[48%] h-36 mb-4 rounded-2xl shadow-md overflow-hidden'>
               <View className='p-3'>
                 <Text className='font-bold text-[16px] text-gray-800'>{feature.title}</Text>
@@ -227,7 +227,7 @@ const HomeScreen = () => {
 
         <ScrollView horizontal showsHorizontalScrollIndicator={false} className='mt-4 pl-4'>
           {popularItems?.map((item, idx) => (
-            <View key={idx} className='w-36 mr-4'>
+            <View key={item.username + item.itemName || idx} className='w-36 mr-4'>
               <Image className='w-36 h-44 rounded-lg' source={{uri: item?.image}}/>
               <View className='flex-row items-center mt-2'>
                 <Image className='w-6 h-6 rounded-full mr-2' source={{uri: item?.profile}}/>
