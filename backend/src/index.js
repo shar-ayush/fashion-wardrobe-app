@@ -21,7 +21,7 @@ app.use(express.urlencoded({ extended: true }));
 
 // Routes
 app.use("/api/auth", authRoutes);
-app.use("/api/", savedOutfitsRoutes);
+app.use("/api/save-outfit", savedOutfitsRoutes);
 
 
 

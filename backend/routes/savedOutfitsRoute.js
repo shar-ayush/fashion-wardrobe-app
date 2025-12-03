@@ -4,7 +4,7 @@ import SavedOutfit from '../src/models/savedOutfit.js';
 import authenticateToken from '../src/middleware/authMiddleware.js';
 const router = express.Router();
 
-router.post("/save-outfit", authenticateToken,async (req, res) => {
+router.post("/", authenticateToken,async (req, res) => {
     try {
         const {date, items, caption, occasion, visibility, isOotd} = req.body;
         const userId = req.user.id;
@@ -60,5 +60,23 @@ router.post("/save-outfit", authenticateToken,async (req, res) => {
         res.status(500).json({ message: "Server error in saving outfit" });
     }
 });
+
+router.get("/user/:userId", authenticateToken, async (req, res) => {
+    try {
+        const userId = req.params.userId;
+        if(req.user.id !== userId){
+            return res.status(403).json({ message: "Forbidden access" });
+        }
+
+        const user = await User.findById(userId).populate('outfits');
+        if(!user){
+            return res.status(404).json({ message: "User not found" });
+        }
+        res.status(200).json(user.outfits);
+    } catch (error) {
+        console.error("Error in fetching outfits", error.message);
+        res.status(500).json({ message: "Server error in fetching outfits" });
+    }
+})
 
 export default router;
