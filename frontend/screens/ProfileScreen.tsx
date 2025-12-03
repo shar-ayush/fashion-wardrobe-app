@@ -12,7 +12,19 @@ const ProfileScreen = () => {
   const [activeTab, setActiveTab] = useState("Clothes");
   const [activeCategory, setActiveCategory] = useState("All");
   const { logout, token, user } = useAuthStore();
-  const [outfits, setOutfits] = useState([]);
+  type ClothItem = {
+    id?: string;
+    image: string;
+    type: string;
+    gender?: string;
+  };
+
+  type Outfit = {
+    _id?: string;
+    items: ClothItem[];
+  };
+
+  const [outfits, setOutfits] = useState<Outfit[]>([]);
   const [loading, setLoading] = useState(false);
   const username = user?.username;
   const email = user?.email;
@@ -64,11 +76,9 @@ const ProfileScreen = () => {
         return true;
     }
   })
-  // @ts-ignore
-  const sortItems = (items) => {
+  const sortItems = (items: ClothItem[]) => {
     const order = ["shirt", "pants", "skirt", "shoes"];
-    // @ts-ignore
-    return items.sort((a, b) => order.indexOf(a.type) - order.indexOf(b.type));
+    return [...items].sort((a, b) => order.indexOf(a.type) - order.indexOf(b.type));
   }
 
   console.log("Outfits:", outfits);
@@ -185,6 +195,7 @@ const ProfileScreen = () => {
                       }}
                     className='bg-white rounded-lg shadow-sm border border-gray-100'
                     >
+                      
                     {sortItems(outfit.items).map((item, index) => (
                       <Image 
                       key={`${outfit._id}-${item.id}-${index}`}
