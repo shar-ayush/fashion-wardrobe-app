@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 
 const outfitSchema = new mongoose.Schema({
-    occassion: String,
+    occasion: String,
     style: String,
     items: [String],
     image: String,
