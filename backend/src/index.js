@@ -2,10 +2,13 @@ import express from 'express';
 import {connectDB} from './lib/db.js'
 import cors from 'cors';
 import 'dotenv/config'
-// import {audioToAudio, HfInference} from '@huggingface/inference';
+
 
 import authRoutes from '../routes/authRoutes.js'
 import savedOutfitsRoutes from '../routes/savedOutfitsRoute.js';
+import smartSearchRoutes from '../routes/smartSearchRoutes.js';
+
+import {seedOutfitdata} from "../src/lib/seedOutfitData.js"
 
 
 // Initialize Express app
@@ -22,10 +25,12 @@ app.use(express.urlencoded({ extended: true }));
 // Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/save-outfit", savedOutfitsRoutes);
+app.use('/api/smart-search', smartSearchRoutes);
 
 
 
 app.listen(PORT, async () => {
     console.log(`Server is running on port ${PORT}`);
     await connectDB();
+    await seedOutfitdata();
 })
