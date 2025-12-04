@@ -3,7 +3,7 @@ import React, { useState } from 'react'
 import { useNavigation } from '@react-navigation/native'
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
-import { max } from 'moment';
+
 
 const AiAssistantScreen = () => {
     const navigation = useNavigation();
@@ -24,64 +24,75 @@ const AiAssistantScreen = () => {
         "Summer dress ideas for a beach vacation🏖️",
     ]
 
-    const OPEN_API_KEY = "ABC";
-    const OPEN_API_URL = "https://api.openai.com/v1/chat/completions";
+    const OPENROUTER_API_KEY = `${process.env.EXPO_PUBLIC_OPEN_ROUTER_API_KEY}`;
+    const OPENROUTER_API_URL = "https://openrouter.ai/api/v1/chat/completions";
 
     const handleSend = async () => {
-        if (!query.trim()) return;
+        if (!query && !query.trim()) return;
+
         const userMessage = {
             id: Date.now().toString(),
             text: query,
             sender: 'user'
-        }
+        };
+
         setMessages((prevMessages) => [...prevMessages, userMessage]);
         setQuery("");
         setIsLoading(true);
 
         try {
-            const response = await fetch(OPEN_API_URL, {
+            const response = await fetch(OPENROUTER_API_URL, {
                 method: 'POST',
                 headers: {
                     "Content-Type": "application/json",
-                    Authorization: `Bearer ${OPEN_API_KEY}`
+                    "Authorization": `Bearer ${OPENROUTER_API_KEY}`,
                 },
                 body: JSON.stringify({
-                    model: "gpt-4o",
+                    model: "meta-llama/llama-3.3-70b-instruct:free",
                     messages: [
-                        { role: "system", content: "You are a fashion assistant. Provide outfit suggestions with emojis and include links to relevant products or places where applicable." },
-                        { role: "user", content: query },
+                        {
+                            role: "system",
+                            content: "You are a fashion assistant. Provide outfit suggestions with emojis and include links to relevant products or places where applicable."
+                        },
+                        {
+                            role: "user",
+                            content: userMessage.text
+                        },
                     ],
-                    max_tokens: 150,
+                    // OpenRouter doesn't strictly enforce max_tokens, but good to have
+                    // max_tokens: 150,
                 })
-            })
+            });
 
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
 
             const data = await response.json();
+
+            // Check if valid response exists
             if (!data.choices || !data.choices[0] || !data.choices[0].message || !data.choices[0].message.content) {
-                throw new Error("Invalid response from OpenAI API");
+                throw new Error("Invalid response from OpenRouter API");
             }
 
             const aiResponse = data.choices[0].message.content;
 
+            // Text enhancement logic
             const enhancedResponse = aiResponse
-                .replace("dress", "dress 👗")
-                .replace("suit", "suit 🤵🏻")
-                .replace("casual", "casual 😎")
-                .replace("party", "party 👯")
-                .replace("http", "[Link](")
-                .replace(" ", ") ");
+                .replace(/dress/gi, "dress 👗")
+                .replace(/suit/gi, "suit 🤵🏻")
+                .replace(/casual/gi, "casual 😎")
+                .replace(/party/gi, "party 👯")
+                .replace(/(https?:\/\/[^\s]+)/g, "[Link]($1)");
 
-            setMessages((prevMessages) => [...prevMessages, 
-                { 
-                    id: (Date.now() + 1).toString(), 
-                    text: enhancedResponse, 
-                    sender: 'ai' 
-                }
+
+            setMessages((prevMessages) => [...prevMessages,
+            {
+                id: (Date.now() + 1).toString(),
+                text: enhancedResponse,
+                sender: 'ai'
+            }
             ]);
-
 
         } catch (error: any) {
             console.log("Error fetching AI response:", error);
@@ -89,11 +100,11 @@ const AiAssistantScreen = () => {
                 id: (Date.now() + 1).toString(),
                 text: `Sorry, I couldn't get suggestions. Try again! (Error: ${error.message})`,
                 sender: 'ai'
-            }])
-        } finally{
+            }]);
+        } finally {
             setIsLoading(false);
         }
-    }
+    };
     const handleSuggestion = (suggestion: string) => {
         setQuery(suggestion);
         handleSend();
@@ -112,22 +123,22 @@ const AiAssistantScreen = () => {
                 {messages.map((message) => (
                     <View key={message.id} className={`mb-3 p-3 rounded-lg max-w-[80%] ${message.sender === 'user' ? "bg-cyan-200 self-end" : "bg-cyan-100 self-start"}`}>
                         <Text className='text-base text-gray-800'>{message.text}</Text>
-                        {message.sender === 'ai' && 
-                        message.text.includes("[Link](") &&
-                        message.text.split("[Link](").slice(1).map((part, index) => {
-                            const [url, rest] = part.split(") ");
-                            if(url){
-                                return(
-                                    <TouchableOpacity
-                                    key={index}
-                                    onPress={() => Linking.openURL(url)}
-                                    className='mt-2'
-                                    >
-                                        <Text className='text-blue-600 text-sm'>🌐Visit {url}</Text>
-                                    </TouchableOpacity>
-                                )
-                            }
-                        })}
+                        {message.sender === 'ai' &&
+                            message.text.includes("[Link](") &&
+                            message.text.split("[Link](").slice(1).map((part, index) => {
+                                const [url, rest] = part.split(") ");
+                                if (url) {
+                                    return (
+                                        <TouchableOpacity
+                                            key={index}
+                                            onPress={() => Linking.openURL(url)}
+                                            className='mt-2'
+                                        >
+                                            <Text className='text-blue-600 text-sm'>🌐Visit {url}</Text>
+                                        </TouchableOpacity>
+                                    )
+                                }
+                            })}
                     </View>
                 ))}
 
@@ -163,10 +174,10 @@ const AiAssistantScreen = () => {
                     placeholderTextColor={"#999"}
                 />
 
-                <TouchableOpacity 
-                onPress={handleSend}
-                disabled={isLoading}
-                className={`ml-2 w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center`}
+                <TouchableOpacity
+                    onPress={handleSend}
+                    disabled={isLoading}
+                    className={`ml-2 w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center`}
                 >
                     <Ionicons name='send' size={20} color={isLoading ? "#ccc" : "#fff"} />
                 </TouchableOpacity>
