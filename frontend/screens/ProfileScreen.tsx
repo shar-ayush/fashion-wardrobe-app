@@ -1,4 +1,4 @@
-import { ActivityIndicator, Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { ActivityIndicator, Alert, Image, ScrollView, StyleSheet, Text, Touchable, TouchableOpacity, View } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import useAuthStore from '../store/authStore';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -28,6 +28,15 @@ const ProfileScreen = () => {
     isOotd?: boolean;
     date?: string;
   };
+
+  const confirmLogout = () => {
+    Alert.alert(
+      "Logout",
+      "Are you sure you want to logout?",[
+        { text: "Cancel", style: "cancel" },
+        { text: "Logout", style: "destructive", onPress: () => logout() }
+      ])
+  }
 
   const [outfits, setOutfits] = useState<Outfit[]>([]);
   const [loading, setLoading] = useState(false);
@@ -86,8 +95,7 @@ const ProfileScreen = () => {
     return [...items].sort((a, b) => order.indexOf(a.type) - order.indexOf(b.type));
   }
 
-  console.log("Outfits:", outfits);
-
+  // console.log("Outfits:", outfits);
 
   return (
     <SafeAreaView className='flex-1 bg-gray-50'>
@@ -98,6 +106,10 @@ const ProfileScreen = () => {
             <Ionicons name='calendar-outline' color="black" size={24} />
             <Ionicons name='pie-chart-outline' color="black" size={24} />
             <Ionicons name='menu-outline' color="black" size={24} />
+            <TouchableOpacity className='items-center justify-center'>
+              <Ionicons name='log-out-outline' color="black" size={24} onPress={confirmLogout} />
+              <Text>Logout</Text>
+            </TouchableOpacity>
           </View>
         </View>
 
