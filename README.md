@@ -7,10 +7,10 @@
 ## 📸 App Screenshots
 
 <p align="center">
-  <img src="./screenshots/home.png" width="250" />
-  <img src="./screenshots/chat-assistant-1.png" width="250" />
-  <img src="./screenshots/outfit-maker-1.png" width="250" />
-  <img src="./screenshots/outfit-maker-3.png" width="250" />
+  <img src="./frontend/screenshots/home.jpg" width="250" />
+  <img src="./frontend/screenshots/chat-assistant-1.png" width="250" />
+  <img src="./frontend/screenshots/outfit-maker-1.png" width="250" />
+  <img src="./frontend/screenshots/outfit-maker-3.png" width="250" />
 </p>
 
 ---
