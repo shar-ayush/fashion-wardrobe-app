@@ -77,7 +77,7 @@ const AiOutfitMakerScreen = () => {
               <Text className='text-xs'>I am your personal AI stylist</Text>
             </View>
           </View>
-          <Text className='text-lg font-semibold mt-3'>Eli</Text>
+          <Text className='text-lg font-semibold mt-3'>Fashion Assistant</Text>
           <Text className='text-gray-500 mt-1'>Minimal - Timeless</Text>
           <TouchableOpacity className='mt-2 bg-gray-200 px-4 py-2 rounded-full'>
             <Text className='text-gray-700 text-sm font-medium'>Change Stylist</Text>
