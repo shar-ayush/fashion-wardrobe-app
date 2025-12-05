@@ -8,9 +8,10 @@
 
 <p align="center">
   <img src="./frontend/screenshots/home.jpg" width="250" />
-  <img src="./frontend/screenshots/chat-assistant-1.png" width="250" />
-  <img src="./frontend/screenshots/outfit-maker-1.png" width="250" />
-  <img src="./frontend/screenshots/outfit-maker-3.png" width="250" />
+  <img src="./frontend/screenshots/chat-assitant-1.jpg" width="250" />
+  <img src="./frontend/screenshots/chat-assitant-3.jpg" width="250" />
+  <img src="./frontend/screenshots/outfit-maker-3.jpg" width="250" />
+  <img src="./frontend/screenshots/profile-1.jpg" width="250" />
 </p>
 
 ---
