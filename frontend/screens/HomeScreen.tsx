@@ -177,16 +177,16 @@ const HomeScreen = () => {
     <SafeAreaView className='flex-1 bg-white'>
       <ScrollView className='flex-1 bg-white'>
         <View className='flex-row items-center justify-between px-4 pt-2'>
-          <Text className='text-3xl font-bold'>Fits</Text>
+          <Text className='text-2xl font-bold'>Outfit Wardrobe</Text>
           <View className='flex-row items-center gap-3'>
-            <TouchableOpacity className='bg-black px-4 py-1 rounded-full'>
+            {/* <TouchableOpacity className='bg-black px-4 py-1 rounded-full'>
               <Text className='text-white font-semibold text-sm'>Upgrade</Text>
-            </TouchableOpacity>
+            </TouchableOpacity> */}
             <Ionicons name="notifications-outline" size={24} color="black" />
             <Ionicons name="search-outline" size={24} color="black" />
           </View>
         </View>
-
+{/* 
         <ScrollView horizontal showsHorizontalScrollIndicator={false} className='mt-4 pl-4'>
           {stories?.map((story, idx) => (
             <Pressable key={story.username || idx} className='items-center mr-4'>
@@ -207,7 +207,7 @@ const HomeScreen = () => {
               </>
             </Pressable>
           ))}
-        </ScrollView>
+        </ScrollView> */}
 
         <View className='flex-row items-center justify-between mt-6 px-4'>
           <Text className='text-lg font-semibold' style={{ flex: 1, flexWrap: 'wrap' }}>Your week</Text>
@@ -296,7 +296,7 @@ const HomeScreen = () => {
             </Pressable>
           ))}
         </View>
-
+{/* 
         <View className='flex-row justify-between items-center mt-6 px-4'>
           <Text className='text-lg font-semibold'>Popular this week</Text>
           <Text className='text-gray-500'>More</Text>
@@ -313,7 +313,7 @@ const HomeScreen = () => {
               <Text className='text-xs text-gray-500 mt-1'>{item.itemName}</Text>
             </View>
           ))}
-        </ScrollView>
+        </ScrollView> */}
       </ScrollView>
     </SafeAreaView>
   )
