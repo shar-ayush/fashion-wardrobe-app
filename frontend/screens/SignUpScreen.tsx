@@ -21,7 +21,8 @@ const SignUpScreen = () => {
         try {
             await register(email, password, username, gender, profileImage);
         } catch (error) {
-            Alert.alert('Error', 'Something went wrong during signup');
+            const message = error instanceof Error ? error.message : String(error);
+            Alert.alert('Error', message || 'Something went wrong during signup');
         }
     }
 

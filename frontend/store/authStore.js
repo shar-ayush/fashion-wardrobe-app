@@ -44,11 +44,14 @@ const useAuthStore = create(
         });
         await useAuthStore.getState().fetchUser();
       } catch (error) {
-        console.error("Registration failed:", error);
+        // console.error("Registration failed:", error);
+        const message = error.response?.data?.message || error.message;
         set({
-          error: error.response?.data?.message || error.message,
+          error: message,
           loading: false,
         });
+        // Re-throw a normalized Error so callers (screens) can show the backend message
+        throw new Error(message);
       }
     },
 
@@ -69,17 +72,24 @@ const useAuthStore = create(
         });
         await useAuthStore.getState().fetchUser();
       } catch (error) {
-        console.error("Login failed:", error);
+        // console.error("Login failed:", error);
+        const message = error.response?.data?.message || error.message;
         set({
-          error: error.response?.data?.message || error.message,
+          error: message,
           loading: false,
         });
+        // Re-throw a normalized Error so callers (screens) can show the backend message
+        throw new Error(message);
       }
     },
 
     logout: async () => {
-      await AsyncStorage.removeItem("token");
-      set({ user: null, token: null, isAuthenticated: false });
+      try {
+        await AsyncStorage.removeItem("token");
+        set({ user: null, token: null, isAuthenticated: false });
+      } catch (error) {
+        console.log("Logout failed:", error);
+      }
     },
 
     fetchUser: async () => {
