@@ -168,8 +168,8 @@ const ProfileScreen = () => {
               <Text>No clothes available in this category</Text>
             ) : (
               <View className='flex-row flex-wrap'>
-                {filteredClothes.map((item) => (
-                  <View className='w-1/3 p-1.5'>
+                {filteredClothes.map((item, index) => (
+                  <View key={`cloth-${index}-${item.type}-${item.gender}`} className='w-1/3 p-1.5'>
                     <View
                       style={{
                         shadowColor: "#000",
@@ -201,7 +201,7 @@ const ProfileScreen = () => {
             ) : (
               <View className='flex-row flex-wrap'>
                 {outfits?.map((outfit) => (
-                  <View className='w-1/2 p-1.5'>
+                  <View key={outfit._id} className='w-1/2 p-1.5'>
                     <View 
                     style={{
                         shadowColor: "#000",
