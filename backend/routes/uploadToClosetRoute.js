@@ -88,4 +88,38 @@ router.post("/", upload.single("image"), async (req, res) => {
   }
 });
 
+
+router.get("/", async (req, res) => {
+  const { userId, gender } = req.query;
+
+  if (!userId) {
+    return res.status(400).json({ error: "User ID is required" });
+  }
+
+  try {
+    // 1. Build the query
+    // We want clothes for this user. 
+    // If a gender is passed (e.g. ?gender=male), we filter by that too.
+    let query = { userId: userId };
+    if (gender) {
+      query.gender = gender;
+    }
+
+    // 2. Fetch from MongoDB
+    const clothes = await Cloth.find(query).sort({ createdAt: -1 }); // Newest first
+
+    // 3. Send back the raw list
+    // (We will filter them into 'tops', 'pants', etc. on the Frontend)
+    res.json({
+      success: true,
+      data: clothes
+    });
+
+  } catch (error) {
+    console.error("Fetch Error:", error);
+    res.status(500).json({ error: "Could not fetch clothes" });
+  }
+});
+
+
 export default router;
