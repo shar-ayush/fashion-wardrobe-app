@@ -4,7 +4,7 @@ import useAuthStore from '../store/authStore';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import axios from 'axios';
-import { mpants, mshirts, pants, shoes, skirts, tops } from '../images';
+import { mpants, mshirts, pants, shoes, skirt, tops } from '../images';
 const API_BASE_URL = process.env.EXPO_PUBLIC_API_BASE_URL;
 
 
@@ -49,7 +49,7 @@ const ProfileScreen = () => {
   const popularClothes = [
     ...pants,
     ...tops,
-    ...skirts,
+    ...skirt,
     ...mpants,
     ...mshirts,
     ...shoes
@@ -83,7 +83,7 @@ const ProfileScreen = () => {
       case "Tops":
         return item.type === "shirt";
       case "Bottoms":
-        return item.type === "pants" || item.type === "skirts";
+        return item.type === "pants" || item.type === "skirt";
       case "Shoes":
         return item.type === "shoes";
       default:

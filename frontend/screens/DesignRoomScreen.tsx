@@ -12,7 +12,7 @@ interface ClothingItem{
     image: string;
     x: number;
     y: number;
-    type?: "pants" | "shoes" | "shirt" | "skirts" | "tops" | "mshirts";
+    type?: "pants" | "shoes" | "shirt" | "skirt" | "tops" | "mshirts";
     gender?: "m" | "f" | "unisex";
 }
 
@@ -34,7 +34,7 @@ const DraggableClothingItem = ({item}: {item: ClothingItem}) => {
             {translateY: translateY.value},
         ],
         position: 'absolute',
-        zIndex: item.type === "shirt" || item.type === "skirts" ? 20 : 10,
+        zIndex: item.type === "shirt" || item.type === "skirt" ? 20 : 10,
     }));
 
     return (
@@ -66,12 +66,12 @@ const DesignRoomScreen = () => {
             const xPosition = width / 2 - 120;
             let yPosition;
             const shirtItems = selectedItems.filter((it) => it.type === "shirt" || it.type === "tops" || it.type === "mshirts");
-            const pantsItems = selectedItems.filter((it) => it.type === "pants" || it.type === "skirts");
+            const pantsItems = selectedItems.filter((it) => it.type === "pants" || it.type === "skirt");
             const shoesItems = selectedItems.filter((it) => it.type === "shoes");
 
             if(item?.type === "shirt" || item.type === "tops" || item.type === "mshirts"){
                 yPosition = height / 2 - 240 - 100;
-            }else if(item?.type === "pants" || item.type === "skirts"){
+            }else if(item?.type === "pants" || item.type === "skirt"){
                 yPosition = shirtItems ? height / 2 - 100 : height / 2;
             }else if(item?.type === "shoes"){
                 yPosition = (shirtItems || pantsItems) ? height / 2 + 100 : height / 2 + 60;

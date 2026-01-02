@@ -29,10 +29,10 @@ const features = [
     screen: "AITryOn",
   },
   {
-    title: "Color Analysis",
+    title: "Upload Outfits",
     image:
       "https://i.pinimg.com/736x/84/bf/ce/84bfce1e46977d50631c4ef2f72f83b1.jpg",
-    screen: "ColorAnalysis",
+    screen: "UploadOutfit",
   },
 ];
 
@@ -284,7 +284,7 @@ const HomeScreen = () => {
                       ? "AI Created New Looks"
                       : idx === 2
                         ? "Instant Try On"
-                        : "Find Your Best Colors"
+                        : "Add Outfits to Your Closet"
                   }
                 </Text>
 

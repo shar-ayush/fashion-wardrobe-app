@@ -1,7 +1,7 @@
 import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import React, { useState } from 'react'
 import { useNavigation, useRoute } from '@react-navigation/native'
-import { mpants, mshirts, pants, shoes, skirts, tops } from '../images';
+import { mpants, mshirts, pants, shoes, skirt, tops } from '../images';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 
@@ -17,7 +17,7 @@ const AddOutfitScreen = () => {
         ...shoes,
         ...tops,
         ...mshirts,
-        ...skirts
+        ...skirt
     ].map((item,idx) => ({
         ...item,
         id: idx+1
