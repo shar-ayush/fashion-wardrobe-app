@@ -84,8 +84,8 @@ const HomeScreen = () => {
     for (let i = -2; i <= 4; i++) { // Show 2 days back, 4 days forward
       const dateObj = today.clone().add(i, 'days');
       dates.push({
-        label: dateObj.format('ddd, Do MMM'), // Matches 'Mon, 1st Jan' format used in DB
-        dayName: dateObj.format('dddd'),      // 'Monday'
+        label: dateObj.format('ddd, Do MMM'),
+        dayName: dateObj.format('dddd'),      
         isToday: i === 0
       })
     }
@@ -134,12 +134,12 @@ const HomeScreen = () => {
   const getOutfitPreview = (items: any[]) => {
     if (!items || items.length === 0) return null;
 
-    // Check against ALL possible types for Tops and Bottoms
+    // Check against All ssible types for Tops and Bottoms
     const top = items.find((i: any) => ["shirt", "tops", "mshirts"].includes(i.type));
     const bottom = items.find((i: any) => ["pants", "mpants", "skirt", "skirts"].includes(i.type));
     const shoes = items.find((i: any) => i.type === "shoes");
 
-    // Fallback: If no specific types found, just take the first item
+    // If no specific types found, just take the first item
     const displayTop = top || items[0];
     const displayBottom = bottom || (items.length > 1 ? items[1] : null);
 

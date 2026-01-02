@@ -16,11 +16,10 @@ const AddOutfitScreen = () => {
     const { user } = useAuthStore();
     const [clothes, setClothes] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
-    
-    // Changed to string[] because MongoDB IDs are strings
+
     const [selected, setSelected] = useState<string[]>([]);
 
-    // ✅ Fetch Clothes from Backend
+    // Fetch Clothes from Backend
     useEffect(() => {
         const fetchClothes = async () => {
             if (!user?._id) return;
@@ -30,10 +29,9 @@ const AddOutfitScreen = () => {
                 });
 
                 if (response.data.success) {
-                    // Map backend data to match your UI needs
                     const mappedClothes = response.data.data.map((item: any) => ({
-                        id: item._id,        // Map _id to id
-                        image: item.imageUrl, // Map imageUrl to image
+                        id: item._id,       
+                        image: item.imageUrl, 
                         type: item.type,
                         gender: item.gender   // 'male' | 'female' | 'unisex'
                     }));
@@ -54,7 +52,6 @@ const AddOutfitScreen = () => {
     }
 
     const handleNext = () => {
-        // Filter from the fetched 'clothes' state instead of 'popularClothes'
         const selectedItems = clothes.filter((item) => selected.includes(item?.id));
         // @ts-ignore
         navigation.navigate("DesignRoom",{

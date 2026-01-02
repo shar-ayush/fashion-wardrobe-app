@@ -66,7 +66,6 @@ const NewOutfitScreen = () => {
     }
     setLoading(true);
     try {
-      // ✅ No need for Base64 conversion, sending URLs directly
       const validItems = selectedItems.map((item) => ({
           id: item.id,
           type: item.type || "Unknown",
@@ -115,7 +114,7 @@ const NewOutfitScreen = () => {
     }
   }
 
-  // ✅ Updated Sorting Logic for Visual Stack
+  // Updated Sorting Logic for Visual Stack
   // 1. Tops (Top)
   // 2. Bottoms (Middle)
   // 3. Shoes (Bottom)

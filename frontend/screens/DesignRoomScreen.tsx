@@ -67,8 +67,7 @@ const DesignRoomScreen = () => {
         const initialClothes = selectedItems.map((item) => {
             const xPosition = width / 2 - 120; // Center Horizontally
             let yPosition;
-            
-            // ✅ Helper groupings
+
             const isTop = ["shirt", "tops", "mshirts"].includes(item.type || "");
             const isBottom = ["pants", "mpants", "skirt", "skirts"].includes(item.type || "");
             const isShoe = item.type === "shoes";
@@ -77,7 +76,7 @@ const DesignRoomScreen = () => {
             const hasTops = selectedItems.some(it => ["shirt", "tops", "mshirts"].includes(it.type || ""));
             const hasBottoms = selectedItems.some(it => ["pants", "mpants", "skirt", "skirts"].includes(it.type || ""));
 
-            // ✅ Dynamic Positioning Calculation
+            // Dynamic Positioning Calculation
             if(isTop){
                 // Upper body area
                 yPosition = height / 2 - 240 - 50; 

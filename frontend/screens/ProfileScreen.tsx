@@ -50,12 +50,11 @@ const ProfileScreen = () => {
       ])
   }
 
-  // ✅ 1. Fetch Outfits (Refreshes on Focus)
+  // 1. Fetch Outfits (Refreshes on Focus)
   useFocusEffect(
     useCallback(() => {
       const fetchOutfits = async () => {
         if (!user?._id || !token) return;
-        // Optional: Only show loading spinner on first load, not every refresh
         if (outfits.length === 0) setLoadingOutfits(true); 
         
         try {
@@ -74,12 +73,11 @@ const ProfileScreen = () => {
     }, [user?._id, token]) // Dependencies
   );
 
-  // ✅ 2. Fetch Clothes from Closet API (Refreshes on Focus)
+  // 2. Fetch Clothes from Closet API (Refreshes on Focus)
   useFocusEffect(
     useCallback(() => {
       const fetchClothes = async () => {
         if (!user?._id) return;
-        // Optional: Only show loading spinner if we have no data yet
         if (clothes.length === 0) setLoadingClothes(true);
 
         try {
@@ -104,22 +102,21 @@ const ProfileScreen = () => {
       };
 
       fetchClothes();
-    }, [user?._id]) // Dependencies
+    }, [user?._id]) 
   );
 
   const filteredClothes = activeCategory === "All" ? clothes : clothes.filter((item) => {
-    // Map Frontend Categories to Database Types
     switch (activeCategory) {
       case "Tops":
         // Backend stores: 'shirt', 'tops', 'mshirts'
         return item.type === "shirt" || item.type === "tops" || item.type === "mshirts";
       case "Bottoms":
-        // Backend stores: 'pants', 'mpants', 'skirt', 'skirts'
+        // Backend stores: 'pants', 'mpants', 'skirt'
         return item.type === "pants" || item.type === "mpants" || item.type === "skirt" || item.type === "skirts";
       case "Shoes":
         return item.type === "shoes";
       case "Outwear":
-         // Add logic if you have jackets etc in future
+         // Add logic for jackets etc in future
          return false;
       default:
         return true;
@@ -243,7 +240,7 @@ const ProfileScreen = () => {
           </View>
         )}
 
-        {/* --- TAB CONTENT: OUTFITS --- */}
+        {/* TAB CONTENT: OUTFITS */}
         {activeTab === "Outfits" && (
           <View className="px-2 mt-4">
             {loadingOutfits ? (
@@ -271,10 +268,10 @@ const ProfileScreen = () => {
                         {sortItems(outfit.items).map((item, index) => (
                         <Image 
                         key={`${outfit._id}-${item._id || index}`}
-                        source={{ uri: item.image }} // Use 'image' here because backend for Outfits likely already matches this structure or needs check
+                        source={{ uri: item.image }} 
                         className='w-24 h-24'
                         resizeMode='contain'
-                        style={{ margin: -5 }} // Overlap slightly
+                        style={{ margin: -5 }} 
                         />
                         ))}
                       </View>

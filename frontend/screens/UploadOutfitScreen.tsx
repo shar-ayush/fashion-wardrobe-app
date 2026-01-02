@@ -3,6 +3,7 @@ import { View, Text, Button, Image, TouchableOpacity, ActivityIndicator, Alert, 
 import * as ImagePicker from 'expo-image-picker';
 import useAuthStore from '../store/authStore';
 import { Ionicons } from '@expo/vector-icons';
+const API_BASE_URL = process.env.EXPO_PUBLIC_API_BASE_URL;
 
 export default function UploadOutfitScreen() {
   const { user } = useAuthStore();
@@ -60,11 +61,9 @@ export default function UploadOutfitScreen() {
     formData.append('userId', user._id);
 
     try {
-      // ✅ UPDATE: Point to your backend route
-      const response = await fetch('http://10.12.71.97:3000/api/upload-to-closet', {
+      const response = await fetch(`${API_BASE_URL}/api/upload-to-closet`, {
         method: 'POST',
         body: formData,
-        // Let fetch handle the Content-Type boundary for FormData
       });
 
       const text = await response.text();
@@ -77,7 +76,7 @@ export default function UploadOutfitScreen() {
       
       if (response.ok && data.success) {
         Alert.alert("Success", "Outfit added to your closet!", [
-          { text: "OK", onPress: () => handleReset() } // Reset form on OK
+          { text: "OK", onPress: () => handleReset() }
         ]);
       } else {
         Alert.alert("Error", data.error || "Upload failed.");
