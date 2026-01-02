@@ -8,11 +8,11 @@ import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 const {width, height} =  Dimensions.get('window');
 
 interface ClothingItem{
-    id: number;
+    id: string;
     image: string;
     x: number;
     y: number;
-    type?: "pants" | "shoes" | "shirt" | "skirt" | "tops" | "mshirts";
+    type?: "pants" | "shoes" | "shirt" | "skirt" | "tops" | "mshirts" | "mpants";
     gender?: "m" | "f" | "unisex";
 }
 
@@ -27,6 +27,8 @@ const DraggableClothingItem = ({item}: {item: ClothingItem}) => {
         item.x = translateX.value;
         item.y = translateY.value;
     });
+    const isTop = ["shirt", "tops", "mshirts"].includes(item.type || "");
+    const isBottom = ["pants", "mpants", "skirt"].includes(item.type || "");
 
     const animatedStyle = useAnimatedStyle(() => ({
         transform: [
@@ -34,7 +36,7 @@ const DraggableClothingItem = ({item}: {item: ClothingItem}) => {
             {translateY: translateY.value},
         ],
         position: 'absolute',
-        zIndex: item.type === "shirt" || item.type === "skirt" ? 20 : 10,
+        zIndex: isTop ? 20 : isBottom ? 10 : 5 
     }));
 
     return (
@@ -63,20 +65,30 @@ const DesignRoomScreen = () => {
 
     useEffect(() => {
         const initialClothes = selectedItems.map((item) => {
-            const xPosition = width / 2 - 120;
+            const xPosition = width / 2 - 120; // Center Horizontally
             let yPosition;
-            const shirtItems = selectedItems.filter((it) => it.type === "shirt" || it.type === "tops" || it.type === "mshirts");
-            const pantsItems = selectedItems.filter((it) => it.type === "pants" || it.type === "skirt");
-            const shoesItems = selectedItems.filter((it) => it.type === "shoes");
+            
+            // ✅ Helper groupings
+            const isTop = ["shirt", "tops", "mshirts"].includes(item.type || "");
+            const isBottom = ["pants", "mpants", "skirt", "skirts"].includes(item.type || "");
+            const isShoe = item.type === "shoes";
 
-            if(item?.type === "shirt" || item.type === "tops" || item.type === "mshirts"){
-                yPosition = height / 2 - 240 - 100;
-            }else if(item?.type === "pants" || item.type === "skirt"){
-                yPosition = shirtItems ? height / 2 - 100 : height / 2;
-            }else if(item?.type === "shoes"){
-                yPosition = (shirtItems || pantsItems) ? height / 2 + 100 : height / 2 + 60;
-            } else{
-                yPosition = height / 2; // default position
+            // Check if user selected other categories to adjust layout dynamically
+            const hasTops = selectedItems.some(it => ["shirt", "tops", "mshirts"].includes(it.type || ""));
+            const hasBottoms = selectedItems.some(it => ["pants", "mpants", "skirt", "skirts"].includes(it.type || ""));
+
+            // ✅ Dynamic Positioning Calculation
+            if(isTop){
+                // Upper body area
+                yPosition = height / 2 - 240 - 50; 
+            } else if(isBottom){
+                // If there is a top, place below it. If no top, place in middle.
+                yPosition = hasTops ? height / 2 - 80 : height / 2 - 150;
+            } else if(isShoe){
+                // If clothes exist, place at bottom. Else middle.
+                yPosition = (hasTops || hasBottoms) ? height / 2 + 120 : height / 2;
+            } else {
+                yPosition = height / 2; // Default center
             }
 
             return {...item, x: xPosition, y: yPosition}
