@@ -20,6 +20,8 @@
     "cloudinary": "^2.8.0",
     "core-js": "^3.47.0",
     "expo": "~54.0.25",
+    "expo-camera": "~17.0.10",
+    "expo-image-picker": "~17.0.10",
     "expo-status-bar": "~3.0.8",
     "jwt-decode": "^4.0.0",
     "moment": "^2.30.1",
