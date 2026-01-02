@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, Button, Image, TouchableOpacity, ActivityIndicator, Alert, ScrollView } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import useAuthStore from '../store/authStore';
+import { Ionicons } from '@expo/vector-icons';
 
 export default function UploadOutfitScreen() {
   const { user } = useAuthStore();
@@ -114,19 +115,21 @@ export default function UploadOutfitScreen() {
       </View>
 
       {/* Inputs - Camera/Gallery Buttons */}
-      <View className="flex-row mb-5 items-center justify-center space-x-4">
+      <View className="flex-row mb-5 items-center justify-around space-x-4">
         <TouchableOpacity 
           onPress={() => pickImage(true)}
-          className="bg-black px-6 py-3 rounded-full flex-row items-center"
+          className="bg-gray-100 px-6 py-3 rounded-lg flex-row items-center"
         >
-          <Text className="text-white font-semibold">📷 Camera</Text>
+          <Ionicons name="camera" size={20} color="black" className="mr-2" />
+          <Text className="text-black font-semibold">Camera</Text>
         </TouchableOpacity>
 
         <TouchableOpacity 
           onPress={() => pickImage(false)}
-          className="bg-black px-6 py-3 rounded-full flex-row items-center ml-3"
+          className="bg-gray-100 px-6 py-3 rounded-lg flex-row items-center ml-3"
         >
-          <Text className="text-white font-semibold">🖼️ Gallery</Text>
+            <Ionicons name="image" size={20} color="black" className="mr-2" />
+          <Text className="text-black font-semibold">Gallery</Text>
         </TouchableOpacity>
       </View>
 
