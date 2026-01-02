@@ -5,14 +5,15 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { jwtDecode } from "jwt-decode";
 import axios from 'axios';
+import { Ionicons } from '@expo/vector-icons';
 const API_BASE_URL =  process.env.EXPO_PUBLIC_API_BASE_URL 
 
 interface ClothingItem {
-  id: number;
+  id: string;
   image: string;
   x: number;
   y: number;
-  type?: "pants" | "shoes" | "shirt" | "skirts" | "tops" | "mshirts";
+  type?: "pants" | "shoes" | "shirt" | "skirt" | "tops" | "mshirts";
   gender?: "m" | "f" | "unisex";
 }
 
@@ -65,18 +66,15 @@ const NewOutfitScreen = () => {
     }
     setLoading(true);
     try {
-      const validateItems = await Promise.all(selectedItems.map(async (item) => {
-        const base64Image = await convertToBase64(item.image);
-        return {
+      // ✅ No need for Base64 conversion, sending URLs directly
+      const validItems = selectedItems.map((item) => ({
           id: item.id,
           type: item.type || "Unknown",
-          image: base64Image,
+          image: item.image, // Cloudinary URL
           x: item.x || 0,
           y: item.y || 0,
-        }
-      }))
+      }));
 
-      const validItems = validateItems.filter((item) => item !== null);
       if(validItems.length === 0) {
         throw new Error("No valid clothing items to save.");
       }
@@ -101,6 +99,8 @@ const NewOutfitScreen = () => {
       });
 
       const updatedOutfits = {...savedOutfits, [date]: response.data.outfit.items };
+      
+      // Reset navigation stack to Home
       navigation.reset({
         index: 0,
         //@ts-ignore
@@ -115,72 +115,97 @@ const NewOutfitScreen = () => {
     }
   }
 
+  // ✅ Updated Sorting Logic for Visual Stack
+  // 1. Tops (Top)
+  // 2. Bottoms (Middle)
+  // 3. Shoes (Bottom)
+  const getSortOrder = (type: string = "") => {
+    if (["shirt", "tops", "mshirts"].includes(type)) return 1;
+    if (["pants", "mpants", "skirt", "skirts"].includes(type)) return 2;
+    if (["shoes"].includes(type)) return 3;
+    return 4;
+  };
+
   return (
     <SafeAreaView className='flex-1 bg-white'>
-      <View className='flex-row justify-between items-center'>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Text className='text-black'>Back</Text>
+      {/* Header */}
+      <View className='flex-row justify-between items-center px-4 py-2'>
+        <TouchableOpacity onPress={() => navigation.goBack()} className="flex-row items-center">
+          <Ionicons name="chevron-back" size={24} color="black" />
+          <Text className='text-black text-lg ml-1'>Back</Text>
         </TouchableOpacity>
-        <Text className='text-lg font-semibold'>New Outfit</Text>
+        <Text className='text-lg font-bold'>New Outfit</Text>
+        <View style={{width: 50}} /> 
       </View>
 
-      <View className='flex-1 items-center justify-center'>
-        {selectedItems?.sort((a, b) => {
-          const order = { "shirt": 1, "tops": 1, "mshirts": 1, "pants": 2, "skirts": 2, "shoes": 3 };
-          return (order[a.type || "shirt"] || 0) - (order[b.type || "shirt"] || 0);
-        })
+      {/* Visual Preview Stack */}
+      <View className='flex-1 items-center justify-center bg-gray-50 m-4 rounded-xl border border-gray-100'>
+        {selectedItems && [...selectedItems] // Create a copy before sorting
+          .sort((a, b) => getSortOrder(a.type) - getSortOrder(b.type))
           .map((item, index) => (
             <Image
               resizeMode='contain'
               key={index}
               source={{ uri: item?.image }}
               style={{
-                width: 240,
-                height: item?.type === 'shoes' ? 180 : 240,
-                marginBottom: index - (selectedItems.length - 1) ? -60 : 0
+                width: 220,
+                // Adjust height for shoes vs clothes
+                height: item?.type === 'shoes' ? 160 : 220,
+                // Negative margin creates the "Stacking" effect
+                marginTop: index === 0 ? 0 : -60,
+                zIndex: selectedItems.length - index // Ensure top items stay visually on top
               }}
             />
-          )
-          )}
+          ))
+        }
       </View>
 
-      <View className='p-4'>
+      {/* Input Form */}
+      <View className='px-6'>
         <TextInput
-          className='border-b border-gray-300 pb-2 text-gray-500'
-          placeholder='Add a Caption...'
+          className='border-b border-gray-300 pb-3 text-base text-black mb-6'
+          placeholder='Write a caption...'
+          placeholderTextColor="#9ca3af"
           value={caption}
           onChangeText={setCaption}
         />
 
-        <View className='mt-4'>
-          <View className='flex-row items-center justify-between'>
-            <Text className='text-gray-500'>Date</Text>
-            <Text className='text-black'>{date || "Today"}</Text>
+        <View className='space-y-4'>
+          <View className='flex-row items-center justify-between py-2 border-b border-gray-100'>
+            <Text className='text-gray-500 text-base'>Date</Text>
+            <Text className='text-black font-medium'>{date || "Today"}</Text>
           </View>
 
-          <View className='flex-row items-center justify-between mt-2'>
-            <Text className='text-gray-500'>Add to OOTD Story</Text>
-            <Switch value={isOotd} onValueChange={setIsOotd} />
+          <View className='flex-row items-center justify-between py-2 border-b border-gray-100'>
+            <Text className='text-gray-500 text-base'>Add to OOTD Story</Text>
+            <Switch 
+                value={isOotd} 
+                onValueChange={setIsOotd} 
+                trackColor={{ false: "#e5e7eb", true: "#000" }}
+            />
           </View>
 
-          <View className='flex-row items-center justify-between mt-2'>
-            <Text className='text-gray-500'>Occasion</Text>
-            <Text className='text-black'>{occasion}</Text>
+          <View className='flex-row items-center justify-between py-2 border-b border-gray-100'>
+            <Text className='text-gray-500 text-base'>Occasion</Text>
+            <Text className='text-black font-medium'>{occasion}</Text>
           </View>
 
-          <View className='flex-row items-center justify-between mt-2'>
-            <Text className='text-gray-500'>Visibility</Text>
-            <Text className='text-black'>{visibility}</Text>
+          <View className='flex-row items-center justify-between py-2'>
+            <Text className='text-gray-500 text-base'>Visibility</Text>
+            <Text className='text-black font-medium'>{visibility}</Text>
           </View>
         </View>
       </View>
 
+      {/* Save Button */}
       <TouchableOpacity 
-      className='bg-black py-3 mx-4 mb-4 rounded' onPress={handleSave} disabled={loading}>
+      className='bg-black py-4 mx-6 mb-2 rounded-xl mt-4 shadow-sm' 
+      onPress={handleSave} 
+      disabled={loading}>
         {loading ? (
           <ActivityIndicator color="#ffffff" />
         ) : (
-          <Text className='text-white text-center font-semibold'>Save Outfit</Text>
+          <Text className='text-white text-center font-bold text-lg'>Save Outfit</Text>
         )}
       </TouchableOpacity>
     </SafeAreaView>
