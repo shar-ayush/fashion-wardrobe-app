@@ -15,7 +15,7 @@ export default function UploadOutfitScreen() {
   const [category, setCategory] = useState(null);
 
   const categories = {
-    female: ['tops', 'skirts', 'pants'],
+    female: ['tops', 'skirt', 'pants'],
     male: ['mshirts', 'mpants'],
     unisex: ['shoes']
   };
