@@ -1,6 +1,6 @@
 import { Image, Dimensions, Pressable, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
-import React, { useEffect, useState } from 'react'
-import { useIsFocused, useNavigation } from '@react-navigation/native';
+import React, { useCallback, useState } from 'react'
+import { useIsFocused, useNavigation, useFocusEffect } from '@react-navigation/native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import moment from 'moment';
@@ -33,30 +33,6 @@ const features = [
     image:
       "https://i.pinimg.com/736x/84/bf/ce/84bfce1e46977d50631c4ef2f72f83b1.jpg",
     screen: "UploadOutfit",
-  },
-];
-
-const popularItems = [
-  {
-    username: "Trisha Wushres",
-    profile: "https://randomuser.me/api/portraits/women/1.jpg",
-    image:
-      "https://res.cloudinary.com/db1ccefar/image/upload/v1753859289/skirt3_oanqxj.png",
-    itemName: "Floral Skirt",
-  },
-  {
-    username: "Anna Cris",
-    profile: "https://randomuser.me/api/portraits/women/2.jpg",
-    image:
-      "https://res.cloudinary.com/db1ccefar/image/upload/v1753975629/Untitled_design_3_syip4x.png",
-    itemName: "Mens Jeans",
-  },
-  {
-    username: "Isabella",
-    profile: "https://randomuser.me/api/portraits/women/3.jpg",
-    image:
-      "https://res.cloudinary.com/db1ccefar/image/upload/v1753975802/Untitled_design_11_p7t2us.png",
-    itemName: "Shoes",
   },
 ];
 
@@ -103,75 +79,72 @@ const HomeScreen = () => {
   } | null>(null);
 
   const generateDates = () => {
-    const today = moment().startOf('day');
+    const today = moment();
     const dates = [];
-    for (let i = -3; i <= 3; i++) {
+    for (let i = -2; i <= 4; i++) { // Show 2 days back, 4 days forward
+      const dateObj = today.clone().add(i, 'days');
       dates.push({
-        label: today.clone().add(i, 'days').format('ddd, Do MMM'),
-        outfit: i === 1
+        label: dateObj.format('ddd, Do MMM'), // Matches 'Mon, 1st Jan' format used in DB
+        dayName: dateObj.format('dddd'),      // 'Monday'
+        isToday: i === 0
       })
     }
     return dates;
   }
   const dates = generateDates();
 
-  useEffect(() => {
-    const fetchToken = async () => {
-      try {
-        const token = await AsyncStorage.getItem('token');
-        if (token) {
-          const decoded = jwtDecode(token) as { id: string };
-          setUserId(decoded.id);
-        }
-      } catch (error) {
-        console.error("Error fetching token:", error);
-      }
+  // 2. Fetch User & Outfits
+  useFocusEffect(
+    useCallback(() => {
+        const init = async () => {
+            try {
+                const token = await AsyncStorage.getItem('token');
+                if (token) {
+                    const decoded = jwtDecode(token) as { id: string };
+                    setUserId(decoded.id);
+                    await fetchSavedOutfits(decoded.id, token);
+                }
+            } catch (error) {
+                console.error("Initialization error:", error);
+            }
+        };
+        init();
+    }, [])
+  );
+  const fetchSavedOutfits = async (uid: string, token: string) => {
+    try {
+      const response = await axios.get(`${process.env.EXPO_PUBLIC_API_BASE_URL}/api/save-outfit/user/${uid}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      
+      // Transform array to Object { "Mon, 1st Jan": [items...] }
+      const outfitsMap = response.data.reduce((acc: { [key: string]: any[] }, outfit: any) => {
+        // Only take the items array from the outfit object
+        acc[outfit.date] = outfit.items; 
+        return acc;
+      }, {});
+      
+      setSavedOutfits(outfitsMap);
+    } catch (error) {
+      console.error("Error fetching saved outfits:", error);
     }
+  }
 
-    const fetchSavedOutfits = async () => {
-      if (!userId) {
-        console.log("Skipping: User ID not available");
-        return;
-      }
+  // 3. Helper to find relevant items in an outfit
+  const getOutfitPreview = (items: any[]) => {
+    if (!items || items.length === 0) return null;
 
-      try {
-        const token = await AsyncStorage.getItem('token');
-        const response = await axios.get(`${process.env.EXPO_PUBLIC_API_BASE_URL}/api/save-outfit/user/${userId}`, {
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
-        });
+    // Check against ALL possible types for Tops and Bottoms
+    const top = items.find((i: any) => ["shirt", "tops", "mshirts"].includes(i.type));
+    const bottom = items.find((i: any) => ["pants", "mpants", "skirt", "skirts"].includes(i.type));
+    const shoes = items.find((i: any) => i.type === "shoes");
 
+    // Fallback: If no specific types found, just take the first item
+    const displayTop = top || items[0];
+    const displayBottom = bottom || (items.length > 1 ? items[1] : null);
 
-        const outfits = response.data.reduce((acc: { [key: string]: any[] }, outfit: any) => {
-          acc[outfit.date] = outfit.items;//
-          return acc;
-        }, {});
-        setSavedOutfits(outfits);
-   
-
-
-      } catch (error) {
-        console.error("Error fetching saved outfits:", error);
-      }
-    }
-
-    if (isFocused) {
-      fetchToken().then(() => {
-        if (userId) {
-          fetchSavedOutfits();
-        }
-      })
-    }
-
-    const unsubscribe = navigation.addListener('focus', () => {
-      const state = navigation.getState();
-      const params = state?.routes[state.index].params;
-      if (params?.savedOutfits) {
-        setSavedOutfits((prev) => ({ ...prev, ...params.savedOutfits }));
-      }
-    })
-  }, [isFocused, navigation, userId]);
+    return { top: displayTop, bottom: displayBottom };
+  };
 
   return (
     <SafeAreaView className='flex-1 bg-white'>
@@ -179,85 +152,79 @@ const HomeScreen = () => {
         <View className='flex-row items-center justify-between px-4 pt-2'>
           <Text className='text-2xl font-bold'>Outfit Wardrobe</Text>
           <View className='flex-row items-center gap-3'>
-            {/* <TouchableOpacity className='bg-black px-4 py-1 rounded-full'>
-              <Text className='text-white font-semibold text-sm'>Upgrade</Text>
-            </TouchableOpacity> */}
             <Ionicons name="notifications-outline" size={24} color="black" />
             <Ionicons name="search-outline" size={24} color="black" />
           </View>
         </View>
-{/* 
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} className='mt-4 pl-4'>
-          {stories?.map((story, idx) => (
-            <Pressable key={story.username || idx} className='items-center mr-4'>
-              <View className={`w-16 h-16 rounded-full items-center justify-center relative ${story.viewed
-                  ? "border-2 border-gray-300"
-                  : "border-2 border-purple-400"
-                }`}>
-                <Image className='h-16 w-16 rounded-full' source={{ uri: story.avatar }} />
-                {story.isOwn && (
-                  <View className='absolute bottom-0 right-0 bg-black rounded-full h-5 w-5 items-center justify-center'>
-                    <Text className='text-xs text-white'>+</Text>
-                  </View>
-
-                )}
-              </View>
-              <>
-                <Text className='text-xs mt-1'>{story.username}</Text>
-              </>
-            </Pressable>
-          ))}
-        </ScrollView> */}
 
         <View className='flex-row items-center justify-between mt-6 px-4'>
           <Text className='text-lg font-semibold' style={{ flex: 1, flexWrap: 'wrap' }}>Your week</Text>
           <Text className='text-gray-500' style={{ marginLeft: 8 }}>Planner</Text>
         </View>
 
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} className='mt-4 pl-4'>
+        {/* Weekly Planner ScrollView */}
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} className='mt-4 pl-4 pb-4'>
           {dates?.map((day, idx) => {
-            const today = moment().format('ddd, Do MMM');
-            // @ts-ignore
-            const outfit = savedOutfits?.[day.label] || (day.label === today && savedOutfits?.[today] ? savedOutfits[today] : null);
+            const outfitItems = savedOutfits[day.label];
+            const preview = outfitItems ? getOutfitPreview(outfitItems) : null;
+
             return (
               <View key={day.label} className='mr-3'>
                 <Pressable
                   onPress={() => {
                     navigation.navigate("AddOutfit", {
-                      date: day.label,
+                      date: day.label, 
                       savedOutfits,
                     })
                   }}
-                  className={`h-40 w-24 rounded-xl items-center justify-center overflow-hidden shadow-md ${outfit ? 'bg-white' : 'bg-gray-50'}`}>
-                  {!outfit && (
-                    <View className='w-full h-full flex items-center justify-center'>
-                      <Text className='text-3xl text-gray-400'>+</Text>
+                  className={`h-44 w-28 rounded-2xl items-center justify-center overflow-hidden border ${
+                    day.isToday ? 'border-black bg-gray-50' : 'border-gray-100 bg-white'
+                  } shadow-sm`}
+                  style={{ elevation: 2 }}
+                >
+                  {!preview ? (
+                    // Empty State
+                    <View className='w-full h-full flex items-center justify-center bg-gray-50'>
+                      <View className='bg-white p-2 rounded-full shadow-sm'>
+                         <Ionicons name="add" size={24} color="#9CA3AF" />
+                      </View>
                     </View>
-                  )}
-                  {outfit && (
-                    <View>
-                      {outfit.find((item: any) => item.type === "shirt") && (
-                        <Image
-                          source={{ uri: outfit.find((item: any) => item.type === "shirt")?.image }}
-                          className='w-20 h-20'
-                          resizeMode='contain'
-                          style={{ maxWidth: "100%", maxHeight: "50%" }}
-                        />
-                      )}
-                      {outfit.find((item: any) => item.type === "pants" || item.type === "skirts") && (
-                        <Image
-                          source={{ uri: outfit.find((item: any) => item.type === "pants" || item.type === "skirts")?.image }}
-                          className='w-20 h-20'
-                          resizeMode='contain'
-                          style={{ maxWidth: "100%", maxHeight: "50%" }}
-                        />
-                      )}
+                  ) : (
+                    // Filled State
+                    <View className='w-full h-full items-center justify-center py-2'>
+                        {/* Render Top */}
+                        {preview.top && (
+                            <Image 
+                                source={{ uri: preview.top.image }} 
+                                className='w-20 h-20 mb-[-10px] z-10' 
+                                resizeMode='contain' 
+                            />
+                        )}
+                        {/* Render Bottom */}
+                        {preview.bottom && (
+                            <Image 
+                                source={{ uri: preview.bottom.image }} 
+                                className='w-20 h-20' 
+                                resizeMode='contain' 
+                            />
+                        )}
+                        {/* If only one item, center it better */}
+                        {!preview.bottom && !preview.top && (
+                             <Text className="text-xs text-gray-400">Items saved</Text>
+                        )}
                     </View>
                   )}
                 </Pressable>
-                <Text className='text-xs text-center mt-1 text-gray-700'>
-                  {day.label}
-                </Text>
+
+                {/* Date Label */}
+                <View className='flex-row justify-center items-center mt-2'>
+                    <Text className={`text-[12px] ${day.isToday ? 'text-black' : 'text-gray-800'}`}>
+                        {day.label.split(',')[0]} {/* Mon */}
+                    </Text>
+                    <Text className='text-[12px] text-gray-500'>
+                        {day.label.split(',')[1]} {/* 1st Jan */}
+                    </Text>
+                </View>
               </View>
             )
           })}
