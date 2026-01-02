@@ -7,6 +7,7 @@ import 'dotenv/config'
 import authRoutes from '../routes/authRoutes.js'
 import savedOutfitsRoutes from '../routes/savedOutfitsRoute.js';
 import smartSearchRoutes from '../routes/smartSearchRoutes.js';
+import uploadToClosetRoute from '../routes/uploadToClosetRoute.js';
 
 import {seedOutfitdata} from "../src/lib/seedOutfitData.js"
 
@@ -26,6 +27,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use("/api/auth", authRoutes);
 app.use("/api/save-outfit", savedOutfitsRoutes);
 app.use('/api/smart-search', smartSearchRoutes);
+app.use('/api/upload-to-closet', uploadToClosetRoute);
 
 
 
