@@ -25,7 +25,7 @@ router.post("/", authenticateToken,async (req, res) => {
                 return null;
             }
             return {
-                id: item.id !== undefined || "null",
+                id: item.id !== undefined ? item.id : "null",
                 type: item.type || "unknown",
                 image: imageUrl,
                 x: item.x !== undefined ? item.x : 0,
