@@ -17,7 +17,7 @@ export const pants = [
     "https://res.cloudinary.com/dqu1bwidx/image/upload/e_background_removal/f_png/v1767283549/03d8f02863acb6498082a4781348bd6d_bjmbjj.jpg",
   ].map((img, idx) => ({ id: idx + 1, image: img, type: "shirt", gender: "f" }));
   
-  export const skirts = [
+  export const skirt = [
     "https://res.cloudinary.com/dqu1bwidx/image/upload/e_background_removal/f_png/v1767282998/736ba648cef1be5d3d269a3a29c33f6d_yaj7hr.jpg",
     "https://res.cloudinary.com/dqu1bwidx/image/upload/e_background_removal/f_png/v1767282998/c771c386a2ff099f1be163a42deb30a0_zwibxm.jpg",
     "https://res.cloudinary.com/dqu1bwidx/image/upload/e_background_removal/f_png/v1767282997/29b5298028f3ca3b26b782c1fe7620c9_mnfscn.jpg",
