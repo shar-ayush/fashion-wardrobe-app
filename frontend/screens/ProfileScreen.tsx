@@ -50,7 +50,6 @@ const ProfileScreen = () => {
       ])
   }
 
-  // 1. Fetch Outfits (Refreshes on Focus)
   useFocusEffect(
     useCallback(() => {
       const fetchOutfits = async () => {
@@ -70,10 +69,10 @@ const ProfileScreen = () => {
       };
 
       fetchOutfits();
-    }, [user?._id, token]) // Dependencies
+    }, [user?._id, token]) 
   );
 
-  // 2. Fetch Clothes from Closet API (Refreshes on Focus)
+
   useFocusEffect(
     useCallback(() => {
       const fetchClothes = async () => {
@@ -126,6 +125,31 @@ const ProfileScreen = () => {
     const order = ["shirt", "tops", "mshirts", "pants", "mpants", "skirt", "shoes"];
     return [...items].sort((a, b) => order.indexOf(a.type) - order.indexOf(b.type));
   }
+
+  const confirmDelete = (id?: string) => {
+    if (!id) return;
+    Alert.alert("Delete Item", "Are you sure you want to delete this item?", [
+      { text: "Cancel", style: "cancel" },
+      { text: "Delete", style: "destructive", onPress: () => deleteCloth(id) },
+    ]);
+  };
+
+  const deleteCloth = async (id: string) => {
+    if (!user?._id) return;
+    try {
+      const resp = await axios.delete(`${API_BASE_URL}/api/upload-to-closet/${id}`, {
+        data: { userId: user._id },
+      });
+      if (resp.data && resp.data.success) {
+        setClothes((prev) => prev.filter((c) => c._id !== id));
+      } else {
+        Alert.alert("Error", resp.data?.error || "Failed to delete item");
+      }
+    } catch (error) {
+      console.error("Delete failed", error);
+      Alert.alert("Error", "Failed to delete item");
+    }
+  };
 
   // console.log("Outfits:", outfits);
 
@@ -200,7 +224,7 @@ const ProfileScreen = () => {
             </ScrollView>
         )}
 
-        {/* --- TAB CONTENT: CLOTHES --- */}
+        {/* TAB CONTENT: CLOTHES */}
         {activeTab === "Clothes" && (
           <View className='px-4 mt-2'>
             {loadingClothes ? (
@@ -216,6 +240,7 @@ const ProfileScreen = () => {
                   <View key={`cloth-${index}-${item._id}`} className='w-1/3 p-1.5'>
                     <View
                       style={{
+                        position: 'relative',
                         shadowColor: "#000",
                         shadowOffset: { width: 0, height: 2 },
                         shadowOpacity: 0.1,
@@ -225,9 +250,14 @@ const ProfileScreen = () => {
                       className='bg-white rounded-lg shadow-sm border border-gray-100 overflow-hidden'
                     >
                       <Image className='w-full h-32' source={{ uri: item?.image }} resizeMode='contain' />
+                      <TouchableOpacity
+                        onPress={() => confirmDelete(item._id)}
+                        className='absolute top-1 right-1 bg-gray-300 rounded-full p-1'
+                      >
+                        <Ionicons name='trash' color='gray' size={14} />
+                      </TouchableOpacity>
                       <View className='p-2'>
                         <Text className='text-xs font-medium text-gray-600 capitalize'>
-                            {/* Make the display name prettier */}
                             {item?.type === 'mshirts' ? 'Shirt' : item?.type === 'mpants' ? 'Pants' : item?.type} 
                             {item?.gender === 'male' ? ' (M)' : item?.gender === 'female' ? ' (F)' : ' (Unisex)'}
                         </Text>
@@ -263,7 +293,7 @@ const ProfileScreen = () => {
                       }}
                     className='bg-white rounded-lg shadow-sm border border-gray-100 p-2'
                     >
-                      {/* Items Stack */}
+                      {/* Items  */}
                       <View className="flex-row flex-wrap justify-center h-40 overflow-hidden">
                         {sortItems(outfit.items).map((item, index) => (
                         <Image 
