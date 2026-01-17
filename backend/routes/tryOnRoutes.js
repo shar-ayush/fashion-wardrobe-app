@@ -56,21 +56,15 @@ router.post(
         throw new Error('Invalid response from rapidapi: missing image');
       }
 
-      // Normalize to a data URI that Cloudinary accepts.
-      // The API sometimes returns a raw base64 string or a full data URI.
       const base64Image = base64.startsWith('data:')
         ? base64
         : `data:image/jpeg;base64,${base64}`;
 
-      // 5. Upload to Cloudinary
       const cloudinaryResult = await cloudinary.uploader.upload(base64Image, {
         folder: "virtual_try_on_results",
         resource_type: "image",
       });
 
-      
-
-      // cleanup temp uploads
       try {
         fs.unlinkSync(personPath);
         fs.unlinkSync(apparelPath);
@@ -78,15 +72,13 @@ router.post(
         console.warn("Failed to delete temp files:", e.message);
       }
 
-      // 7. Send back the Cloudinary URL
       res.json({
         success: true,
         imageUrl: cloudinaryResult.secure_url, 
       });
     } catch (err) {
       console.error("Try-on error:", err?.response?.data || err.message);
-      
-      // Cleanup on error as well
+
       try {
         if (fs.existsSync(personPath)) fs.unlinkSync(personPath);
         if (fs.existsSync(apparelPath)) fs.unlinkSync(apparelPath);
