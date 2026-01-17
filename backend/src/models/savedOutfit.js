@@ -19,4 +19,7 @@ const savedOutfitSchema = new mongoose.Schema({
     createdAt: { type: Date, default: Date.now },
 });
 
+// TTL index: automatically remove saved outfits 7 days (604800 seconds) after creation
+savedOutfitSchema.index({ createdAt: 1 }, { expireAfterSeconds: 604800 });
+
 export default mongoose.model('SavedOutfit', savedOutfitSchema);
