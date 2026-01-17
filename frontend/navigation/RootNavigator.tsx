@@ -11,6 +11,7 @@ import useAuthStore from '../store/authStore';
 import AiAssistantScreen from '../screens/AiAssistantScreen';
 import AiOutfitMakerScreen from '../screens/AiOutfitMakerScreen';
 import UploadOutfitScreen from '../screens/UploadOutfitScreen';
+import AITryOnScreen from '../screens/AITryOnScreen';
 
 const RootNavigator = () => {
   const Stack = createNativeStackNavigator();
@@ -30,6 +31,7 @@ const RootNavigator = () => {
           <Stack.Screen name="AIChat" component={AiAssistantScreen} />
           <Stack.Screen name="AIOutfit" component={AiOutfitMakerScreen} />
           <Stack.Screen name="UploadOutfit" component={UploadOutfitScreen} />
+          <Stack.Screen name="AITryOn" component={AITryOnScreen} />
           
         </>
       ) : (
