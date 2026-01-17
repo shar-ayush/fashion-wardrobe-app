@@ -5,11 +5,14 @@ import { removeBackground } from "@imgly/background-removal-node";
 import cloudinary from "../src/lib/cloudinary.js";
 import Cloth from "../src/models/Cloth.js";
 
-
 const router = express.Router();
 
-// Multer: temp upload folder
-const upload = multer({ dest: "uploads/" });
+const UPLOAD_DIR = "uploads/";
+if (!fs.existsSync(UPLOAD_DIR)) {
+  fs.mkdirSync(UPLOAD_DIR);
+}
+
+const upload = multer({ dest: UPLOAD_DIR });
 
 router.post("/", upload.single("image"), async (req, res) => {
   if (!req.file) {
@@ -17,7 +20,6 @@ router.post("/", upload.single("image"), async (req, res) => {
   }
   const { category, gender, userId } = req.body;
   if (!category || !gender || !userId) {
-    // Cleanup if validation fails
     if (fs.existsSync(req.file.path)) fs.unlinkSync(req.file.path);
     return res
       .status(400)
@@ -27,19 +29,16 @@ router.post("/", upload.single("image"), async (req, res) => {
   const inputPath = req.file.path;
 
   try {
-    // Remove background using Imgly
     const blob = await removeBackground(inputPath);
     const arrayBuffer = await blob.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
 
-    // Upload cleaned image to Cloudinary
     const uploadStream = cloudinary.uploader.upload_stream(
       {
         folder: "outfits/processed",
         format: "png",
       },
       async (error, result) => {
-        // cleanup temp file
         try {
           if (fs.existsSync(inputPath)) fs.unlinkSync(inputPath);
         } catch (e) {
@@ -60,7 +59,7 @@ router.post("/", upload.single("image"), async (req, res) => {
             imageUrl: result.secure_url,
             publicId: result.public_id,
             gender: gender,
-            type: category, 
+            type: category,
           });
 
           const savedCloth = await newCloth.save();
@@ -72,13 +71,12 @@ router.post("/", upload.single("image"), async (req, res) => {
           });
         } catch (error) {
           console.error("Database Error:", error);
-          // Cleanup Cloudinary image if DB fails (prevents orphans)
           await cloudinary.uploader.destroy(result.public_id);
           return res
             .status(500)
             .json({ error: "Failed to save outfit to database" });
         }
-      }
+      },
     );
 
     uploadStream.end(buffer);
@@ -88,7 +86,6 @@ router.post("/", upload.single("image"), async (req, res) => {
   }
 });
 
-
 router.get("/", async (req, res) => {
   const { userId, gender } = req.query;
 
@@ -97,29 +94,56 @@ router.get("/", async (req, res) => {
   }
 
   try {
-    // 1. Build the query
-    // We want clothes for this user. 
-    // If a gender is passed (e.g. ?gender=male), we filter by that too.
     let query = { userId: userId };
     if (gender) {
       query.gender = gender;
     }
+    const clothes = await Cloth.find(query).sort({ createdAt: -1 }); 
 
-    // 2. Fetch from MongoDB
-    const clothes = await Cloth.find(query).sort({ createdAt: -1 }); // Newest first
-
-    // 3. Send back the raw list
-    // (We will filter them into 'tops', 'pants', etc. on the Frontend)
     res.json({
       success: true,
-      data: clothes
+      data: clothes,
     });
-
   } catch (error) {
     console.error("Fetch Error:", error);
     res.status(500).json({ error: "Could not fetch clothes" });
   }
 });
 
+
+router.delete("/:id", async (req, res) => {
+  const { id } = req.params;
+  const { userId } = req.body;
+
+  if (!userId) {
+    return res.status(400).json({ error: "User ID is required" });
+  }
+
+  try {
+    const cloth = await Cloth.findById(id);
+    if (!cloth) {
+      return res.status(404).json({ error: "Cloth not found" });
+    }
+
+    if (cloth.userId.toString() !== userId) {
+      return res.status(403).json({ error: "Forbidden: not the owner" });
+    }
+
+    if (cloth.publicId) {
+      try {
+        await cloudinary.uploader.destroy(cloth.publicId, { resource_type: "image" });
+      } catch (err) {
+        console.error("Cloudinary destroy error:", err);
+      }
+    }
+
+    await Cloth.deleteOne({ _id: id });
+
+    res.json({ success: true, message: "Cloth deleted" });
+  } catch (error) {
+    console.error("Delete Error:", error);
+    res.status(500).json({ error: "Failed to delete cloth" });
+  }
+});
 
 export default router;
