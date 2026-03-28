@@ -7,19 +7,9 @@ const API_BASE_URL = process.env.EXPO_PUBLIC_API_BASE_URL;
 
 export default function UploadOutfitScreen() {
   const { user } = useAuthStore();
-
   const [image, setImage] = useState(null);
   const [loading, setLoading] = useState(false);
-  
-  // Selection States
   const [gender, setGender] = useState('female');
-  const [category, setCategory] = useState(null);
-
-  const categories = {
-    female: ['tops', 'skirt', 'pants'],
-    male: ['mshirts', 'mpants'],
-    unisex: ['shoes']
-  };
 
   // 1. Pick Image
   const pickImage = async (useCamera = false) => {
@@ -40,8 +30,8 @@ export default function UploadOutfitScreen() {
 
   // 2. Upload to Backend
   const handleUpload = async () => {
-    if (!image || !category) {
-      Alert.alert("Missing Info", "Please select an image and a category.");
+    if (!image) {
+      Alert.alert("Missing Info", "Please select an image.");
       return;
     }
 
@@ -56,7 +46,6 @@ export default function UploadOutfitScreen() {
     
     //@ts-ignore
     formData.append('image', { uri: image, name: filename, type });
-    formData.append('category', category);
     formData.append('gender', gender);
     formData.append('userId', user._id);
 
@@ -92,7 +81,6 @@ export default function UploadOutfitScreen() {
   // Reset Form
   const handleReset = () => {
     setImage(null);
-    setCategory(null);
   };
 
   return (
@@ -145,37 +133,12 @@ export default function UploadOutfitScreen() {
                 ? 'bg-black border-black' 
                 : 'bg-transparent border-gray-300'
             }`}
-            onPress={() => { setGender(g); setCategory(null); }}
+            onPress={() => { setGender(g);}}
           >
             <Text className={`font-medium ${
               gender === g ? 'text-white' : 'text-gray-800'
             }`}>
               {g.toUpperCase()}
-            </Text>
-          </TouchableOpacity>
-        ))}
-      </View>
-
-      {/* Category Selection */}
-      <Text className="self-start text-base font-semibold mb-3 text-black">
-        Category
-      </Text>
-      <View className="flex-row mb-8 w-full">
-        {/* @ts-ignore */}
-        {[...categories[gender], ...categories.unisex].map((cat) => (
-          <TouchableOpacity 
-            key={cat} 
-            className={`px-4 py-3 border rounded-full mr-3 mb-3 ${
-              category === cat 
-                ? 'bg-black border-black' 
-                : 'bg-transparent border-gray-300'
-            }`}
-            onPress={() => setCategory(cat)}
-          >
-            <Text className={`font-medium ${
-              category === cat ? 'text-white' : 'text-gray-800'
-            }`}>
-              {cat.toUpperCase()}
             </Text>
           </TouchableOpacity>
         ))}
@@ -193,9 +156,7 @@ export default function UploadOutfitScreen() {
               !image ? "bg-gray-300" : "bg-black"
             }`}
           >
-            <Text className="text-white font-bold text-lg">
-              Upload to Closet
-            </Text>
+            <Text className="text-white font-bold text-lg">Upload to Closet</Text>
           </TouchableOpacity>
         )}
       </View>

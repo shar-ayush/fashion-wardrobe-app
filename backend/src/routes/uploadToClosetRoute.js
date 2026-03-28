@@ -4,6 +4,7 @@ import fs from "fs";
 import { removeBackground } from "@imgly/background-removal-node";
 import cloudinary from "../lib/cloudinary.js";
 import Cloth from "../models/Cloth.js";
+import { analyzeClothImage } from "../services/visionTagging.service.js";
 
 const router = express.Router();
 
@@ -18,12 +19,12 @@ router.post("/", upload.single("image"), async (req, res) => {
   if (!req.file) {
     return res.status(400).json({ error: "No image uploaded" });
   }
-  const { category, gender, userId } = req.body;
-  if (!category || !gender || !userId) {
+  const { gender, userId } = req.body;
+  if (!gender || !userId) {
     if (fs.existsSync(req.file.path)) fs.unlinkSync(req.file.path);
     return res
       .status(400)
-      .json({ error: "Category, Gender, and UserId are required" });
+      .json({ error: "Gender and UserId are required" });
   }
 
   const inputPath = req.file.path;
@@ -52,29 +53,54 @@ router.post("/", upload.single("image"), async (req, res) => {
         }
 
         try {
-          console.log("Saving to DB...");
+          console.log("Running AI tagging...");
+
+          let aiData = null;
+          
+          try {
+            aiData = await analyzeClothImage(result.secure_url);
+          } catch (error) {
+            console.error("AI tagging failed:", error);
+          }
+
+          console.log("AI tagging completed:", aiData);
 
           const newCloth = new Cloth({
             userId: userId,
             imageUrl: result.secure_url,
             publicId: result.public_id,
             gender: gender,
-            type: category,
-          });
+            category: aiData?.category || "unknown",
+            subCategory: aiData?.subCategory || "unknown",
+            color: {
+              primary: aiData?.color?.primary || "unknown",
+              secondary: aiData?.color?.secondary || [],
+            },
+            style: aiData?.style || [],
+            fabric: aiData?.fabric || "unknown",
+            fit: aiData?.fit || "regular",
+            pattern: aiData?.pattern || "solid",
+            season: aiData?.season || [],
+            occasions: aiData?.occasions || [],
+            formality: aiData?.formality || "casual",
+            weatherSuitability: aiData?.weatherSuitability || [],
+            embeddingHint: aiData?.embeddingHint || "",
+            aiTagged: !!aiData,
+          })
 
           const savedCloth = await newCloth.save();
 
           return res.json({
             success: true,
             data: savedCloth,
-            message: "Outfit processed and saved successfully",
+            message: "Cloth processed and saved successfully",
           });
         } catch (error) {
           console.error("Database Error:", error);
           await cloudinary.uploader.destroy(result.public_id);
           return res
             .status(500)
-            .json({ error: "Failed to save outfit to database" });
+            .json({ error: "Failed to save cloth to database" });
         }
       },
     );
