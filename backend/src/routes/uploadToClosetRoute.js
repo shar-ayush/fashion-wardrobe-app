@@ -2,8 +2,8 @@ import express from "express";
 import multer from "multer";
 import fs from "fs";
 import { removeBackground } from "@imgly/background-removal-node";
-import cloudinary from "../src/lib/cloudinary.js";
-import Cloth from "../src/models/Cloth.js";
+import cloudinary from "../lib/cloudinary.js";
+import Cloth from "../models/Cloth.js";
 
 const router = express.Router();
 

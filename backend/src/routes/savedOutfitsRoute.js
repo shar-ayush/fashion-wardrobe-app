@@ -1,7 +1,7 @@
 import express from 'express';
-import User from "../src/models/user.js";
-import SavedOutfit from '../src/models/savedOutfit.js';
-import authenticateToken from '../src/middleware/authMiddleware.js';
+import User from "../models/user.js";
+import SavedOutfit from '../models/savedOutfit.js';
+import authenticateToken from '../middleware/authMiddleware.js';
 const router = express.Router();
 
 router.post("/", authenticateToken,async (req, res) => {

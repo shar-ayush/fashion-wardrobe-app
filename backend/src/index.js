@@ -1,17 +1,17 @@
 import express from 'express';
-import {connectDB} from './lib/db.js'
+import {connectDB} from './lib/db.js';
 import cors from 'cors';
 import 'dotenv/config'
 import path from 'path';
 
 
-import authRoutes from '../routes/authRoutes.js'
-import savedOutfitsRoutes from '../routes/savedOutfitsRoute.js';
-import smartSearchRoutes from '../routes/smartSearchRoutes.js';
-import uploadToClosetRoute from '../routes/uploadToClosetRoute.js';
-import tryOnRoutes from '../routes/tryOnRoutes.js';
+import authRoutes from '../src/routes/authRoutes.js';
+import savedOutfitsRoutes from '../src/routes/savedOutfitsRoute.js';
+import smartSearchRoutes from '../src/routes/smartSearchRoutes.js';
+import uploadToClosetRoute from '../src/routes/uploadToClosetRoute.js';
+import tryOnRoutes from '../src/routes/tryOnRoutes.js';
 
-import {seedOutfitdata} from "../src/lib/seedOutfitData.js"
+import {seedOutfitdata} from "../src/lib/seedOutfitData.js";
 
 
 // Initialize Express app

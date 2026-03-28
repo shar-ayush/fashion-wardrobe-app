@@ -3,7 +3,7 @@ import multer from "multer";
 import fs from "fs";
 import axios from "axios";
 import FormData from "form-data";
-import cloudinary from "../src/lib/cloudinary.js";
+import cloudinary from "../lib/cloudinary.js";
 
 
 const router = express.Router();
