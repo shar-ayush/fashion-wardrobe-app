@@ -1,7 +1,7 @@
 import express from "express";
 import cosineSimilarity from "compute-cosine-similarity";
-import Outfit from "../src/models/outfit.js";
-import { generateEmbedding } from "../src/lib/seedOutfitData.js";
+import Outfit from "../models/outfit.js";
+import { generateEmbedding } from "../lib/seedOutfitData.js";
 
 const router = express.Router();
 
