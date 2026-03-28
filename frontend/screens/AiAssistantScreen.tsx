@@ -48,7 +48,7 @@ const AiAssistantScreen = () => {
                     "Authorization": `Bearer ${OPENROUTER_API_KEY}`,
                 },
                 body: JSON.stringify({
-                    model: "meta-llama/llama-3.3-70b-instruct:free",
+                    model: "qwen/qwen3-vl-30b-a3b-thinking",
                     messages: [
                         {
                             role: "system",
