@@ -1,4 +1,4 @@
-import { ActivityIndicator, Alert, Image, ScrollView, StyleSheet, Text, Touchable, TouchableOpacity, View } from 'react-native'
+import { ActivityIndicator, Alert, Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import React, { useEffect, useState, useCallback } from 'react'
 import useAuthStore from '../store/authStore';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -16,7 +16,8 @@ const ProfileScreen = () => {
   type ClothItem = {
     _id?: string;
     image: string;
-    type: string;
+    category?: string;
+    subCategory?: string;
     gender?: string;
   };
 
@@ -88,7 +89,8 @@ const ProfileScreen = () => {
             const mappedClothes = response.data.data.map((item: any) => ({
               _id: item._id,
               image: item.imageUrl,
-              type: item.type,
+              category: item.category,
+              subCategory: item.subCategory ,
               gender: item.gender
             }));
             setClothes(mappedClothes);
@@ -107,23 +109,24 @@ const ProfileScreen = () => {
   const filteredClothes = activeCategory === "All" ? clothes : clothes.filter((item) => {
     switch (activeCategory) {
       case "Tops":
-        // Backend stores: 'shirt', 'tops', 'mshirts'
-        return item.type === "shirt" || item.type === "tops" || item.type === "mshirts";
+        return item.category === "top"
       case "Bottoms":
-        // Backend stores: 'pants', 'mpants', 'skirt'
-        return item.type === "pants" || item.type === "mpants" || item.type === "skirt" || item.type === "skirts";
-      case "Shoes":
-        return item.type === "shoes";
-      case "Outwear":
-         // Add logic for jackets etc in future
-         return false;
+        return item.category === "bottom"
+      case "Footwear":
+        return item.category === "footwear"
+      case "Outerwear":
+        return item.category === "outerwear"
+      case "Accessories":
+        return item.category === "accessory"
       default:
         return true;
     }
   });
   const sortItems = (items: ClothItem[]) => {
-    const order = ["shirt", "tops", "mshirts", "pants", "mpants", "skirt", "shoes"];
-    return [...items].sort((a, b) => order.indexOf(a.type) - order.indexOf(b.type));
+    const order = ["top", "bottom", "outerwear", "footwear", "accessory"];
+    return [...items].sort(
+      (a, b) => order.indexOf(a.category || "") - order.indexOf(b.category || ""),
+    );
   }
 
   const confirmDelete = (id?: string) => {
@@ -215,7 +218,7 @@ const ProfileScreen = () => {
         {/* CLOTHES FILTER CATEGORIES */}
         {activeTab === "Clothes" && (
             <ScrollView horizontal showsHorizontalScrollIndicator={false} className='mt-3 pl-4 mb-2'>
-            {["All", "Tops", "Bottoms", "Shoes", "Outwear"].map((category) => (
+            {["All", "Tops", "Bottoms", "Footwear", "Outerwear", "Accessories"].map((category) => (
                 <TouchableOpacity key={category} onPress={() => setActiveCategory(category)} className={`px-3 mr-4 rounded-full ${activeCategory === category ? "text-black" : "text-gray-500"}`}>
                 <Text className={`text-base font-medium ${activeCategory === category ? "text-black" : "text-gray-500"}`}>{category}</Text>
                 {activeCategory === category && <View className='h-0.5 bg-black mt-2' />}
@@ -258,8 +261,7 @@ const ProfileScreen = () => {
                       </TouchableOpacity>
                       <View className='p-2'>
                         <Text className='text-xs font-medium text-gray-600 capitalize'>
-                            {item?.type === 'mshirts' ? 'Shirt' : item?.type === 'mpants' ? 'Pants' : item?.type} 
-                            {item?.gender === 'male' ? ' (M)' : item?.gender === 'female' ? ' (F)' : ' (Unisex)'}
+                            {item?.subCategory} 
                         </Text>
                       </View>
                     </View>
@@ -325,4 +327,3 @@ const ProfileScreen = () => {
 
 export default ProfileScreen
 
-const styles = StyleSheet.create({})
