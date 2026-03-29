@@ -49,6 +49,6 @@ const clothSchema = new mongoose.Schema(
 
 clothSchema.index({ userId: 1, category: 1 });
 clothSchema.index({ occasions: 1 });
-clothSchema.index({ color: 1 });
+clothSchema.index({ formality: 1 });
 
 export default mongoose.model("Cloth", clothSchema);
