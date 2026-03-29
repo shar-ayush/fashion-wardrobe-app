@@ -214,7 +214,7 @@ API Design
 | `/api/auth/login`               | POST   | Validates bcrypt hash and returns JWT token                             |
 | `/api/upload-to-closet`         | POST   | Accepts multipart/form-data, removes background, tags with AI, saves to DB |
 | `/api/upload-to-closet?userId=X`| GET    | Fetches all parsed closet items for a specific user                     |
-| `/api/outfit-maker/generate`    | POST   | Takes query, scores wardrobe, triggers LLM, returns best outfit         |
+| `/api/outfit-maker/generate`    | POST   | Takes query, uses a custom scoring engine to select the best outfit, triggers LLM, returns best outfit         |
 | `/api/try-on`                   | POST   | Sends images to Virtual Try-On API and returns synthesized output       |
 | `/api/smart-search`             | GET    | Performs semantic search using embeddings + cosine similarity           |
 
