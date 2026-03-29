@@ -10,6 +10,7 @@ import savedOutfitsRoutes from '../src/routes/savedOutfitsRoute.js';
 import smartSearchRoutes from '../src/routes/smartSearchRoutes.js';
 import uploadToClosetRoute from '../src/routes/uploadToClosetRoute.js';
 import tryOnRoutes from '../src/routes/tryOnRoutes.js';
+import outfitMakerRoutes from "../src/routes/outfitMaker.routes.js";
 
 import {seedOutfitdata} from "../src/lib/seedOutfitData.js";
 
@@ -34,11 +35,12 @@ app.use("/api/save-outfit", savedOutfitsRoutes);
 app.use('/api/smart-search', smartSearchRoutes);
 app.use('/api/upload-to-closet', uploadToClosetRoute);
 app.use("/api/try-on", tryOnRoutes);
+app.use("/api/outfit-maker", outfitMakerRoutes);
 
 
 
 app.listen(PORT, async () => {
     console.log(`Server is running on port ${PORT}`);
     await connectDB();
-    await seedOutfitdata();
+    // await seedOutfitdata();
 })

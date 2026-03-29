@@ -11,10 +11,10 @@ const SignUpScreen = () => {
     const [gender, setGender] = React.useState('');
     const [username, setUsername] = React.useState('');
     const [profileImage, setProfileImage] = React.useState('');
-    const {register} = useAuthStore();
+    const { register } = useAuthStore();
 
     const handleSignup = async () => {
-        if(!email || !password || !username ||  !gender){
+        if (!email || !password || !username || !gender) {
             Alert.alert('Error', 'Please fill all required fields');
             return;
         }
@@ -26,74 +26,107 @@ const SignUpScreen = () => {
         }
     }
 
-  return (
-    <SafeAreaView className='flex-1 bg-white'>
-                <KeyboardAvoidingView 
-                    
-                    behavior={Platform.OS === 'ios' ? 'padding' : 'height'} 
-                    className="flex-1"
+    return (
+        <SafeAreaView className='flex-1 bg-ivory'>
+            <KeyboardAvoidingView
+                behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+                className="flex-1"
+            >
+                <ScrollView
+                    contentContainerStyle={{ flexGrow: 1, justifyContent: 'center' }}
+                    keyboardShouldPersistTaps="handled"
+                    className="px-6"
                 >
-                    <ScrollView 
-                        contentContainerStyle={{ flexGrow: 1, justifyContent: 'center' }} 
-                        keyboardShouldPersistTaps="handled" // Ensures button taps register while keyboard is open
-                        className="p-4"
-                    >
-                        <Text className='text-2xl font-bold text-center mb-6'>SignUp</Text>
-                        
-                        <TextInput
-                            className='border border-gray-300 p-3 mb-4 rounded-lg'
-                            value={email}
-                            onChangeText={setEmail}
-                            placeholder="Email"
-                            autoCapitalize="none"
-                            keyboardType="email-address"
-                        />
-                        <TextInput
-                            className='border border-gray-300 p-3 mb-4 rounded-lg'
-                            value={username}
-                            onChangeText={setUsername}
-                            placeholder="Username"
-                            
-                        />
-    
-                        <TextInput
-                            className='border border-gray-300 p-3 mb-4 rounded-lg'
-                            value={password}
-                            onChangeText={setPassword}
-                            placeholder="Password"
-                            secureTextEntry
-                        />
 
-                        <TextInput
-                            className='border border-gray-300 p-3 mb-4 rounded-lg'
-                            value={gender}
-                            onChangeText={setGender}
-                            placeholder="Gender"
-                            
-                        />
-                        <TextInput
-                            className='border border-gray-300 p-3 mb-4 rounded-lg'
-                            value={profileImage}
-                            onChangeText={setProfileImage}
-                            placeholder="Set Image URL (optional)"
-                            
-                        />
-    
-                        <TouchableOpacity onPress={handleSignup} className='bg-blue-500 p-3 rounded-lg mb-4'>
-                            <Text className='text-white text-center text-lg'>Sign Up</Text>
-                        </TouchableOpacity>
-    
-                        <TouchableOpacity 
+                    {/* APP NAME */}
+                    <Text className='text-center text-taupe tracking-[4px] text-xs mb-2'>
+                        CREATE ACCOUNT
+                    </Text>
+
+                    <Text className='text-4xl font-extrabold text-center text-espresso mb-8'>
+                        Outfit AI
+                    </Text>
+
+                    {/* TITLE */}
+                    <Text className='text-xl font-semibold text-espresso text-center mb-6'>
+                        Sign Up
+                    </Text>
+
+                    {/* EMAIL */}
+                    <TextInput
+                        className='bg-white border border-sand p-4 mb-4 rounded-xl text-espresso'
+                        value={email}
+                        onChangeText={setEmail}
+                        placeholder="Email"
+                        placeholderTextColor="#a89880"
+                        autoCapitalize="none"
+                        keyboardType="email-address"
+                    />
+
+                    {/* USERNAME */}
+                    <TextInput
+                        className='bg-white border border-sand p-4 mb-4 rounded-xl text-espresso'
+                        value={username}
+                        onChangeText={setUsername}
+                        placeholder="Username"
+                        placeholderTextColor="#a89880"
+                    />
+
+                    {/* PASSWORD */}
+                    <TextInput
+                        className='bg-white border border-sand p-4 mb-4 rounded-xl text-espresso'
+                        value={password}
+                        onChangeText={setPassword}
+                        placeholder="Password"
+                        placeholderTextColor="#a89880"
+                        secureTextEntry
+                    />
+
+                    {/* GENDER */}
+                    <TextInput
+                        className='bg-white border border-sand p-4 mb-4 rounded-xl text-espresso'
+                        value={gender}
+                        onChangeText={setGender}
+                        placeholder="Gender"
+                        placeholderTextColor="#a89880"
+                    />
+
+                    {/* PROFILE IMAGE */}
+                    <TextInput
+                        className='bg-white border border-sand p-4 mb-6 rounded-xl text-espresso'
+                        value={profileImage}
+                        onChangeText={setProfileImage}
+                        placeholder="Set Image URL (optional)"
+                        placeholderTextColor="#a89880"
+                    />
+
+                    {/* BUTTON */}
+                    <TouchableOpacity
+                        onPress={handleSignup}
+                        className='bg-espresso py-4 rounded-xl mb-4 items-center'
+                    >
+                        <Text className='text-ivory text-lg font-bold tracking-[2px]'>
+                            SIGN UP
+                        </Text>
+                    </TouchableOpacity>
+
+                    {/* SIGN IN */}
+                    <TouchableOpacity
                         //@ts-ignore
-                        onPress={() => navigation.goBack()}>
-                            <Text className='text-blue-500 text-center text-lg'>
-                                    Already have an account? Sign In
+                        onPress={() => navigation.goBack()}
+                    >
+                        <Text className='text-center text-mocha'>
+                            Already have an account?{" "}
+                            <Text className='text-terracotta font-semibold'>
+                                Sign In
                             </Text>
-                        </TouchableOpacity>
-                    </ScrollView>
-                </KeyboardAvoidingView>
-            </SafeAreaView>
-  )
+                        </Text>
+                    </TouchableOpacity>
+
+                </ScrollView>
+            </KeyboardAvoidingView>
+        </SafeAreaView>
+    )
 }
 
 export default SignUpScreen

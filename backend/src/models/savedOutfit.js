@@ -2,20 +2,20 @@ import mongoose from 'mongoose';
 
 const savedOutfitSchema = new mongoose.Schema({
     userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
-    date:{ type:String, required:true },
-    items:[
+    date: { type: String, required: true },
+    items: [
         {
             id: { type: String },
-            type:{type:String, enum:["pants","tops","shoes","skirt","shirt","mshirts","mpants"], required:true},
-            image:{ type:String, required:true},
-            x:{ type:Number, default:0},
-            y:{ type:Number, default:0}
+            type: { type: String, enum: ["top", "bottom", "footwear", "outerwear", "accessory"], default: "top" },
+            image: { type: String, required: true },
+            x: { type: Number, default: 0 },
+            y: { type: Number, default: 0 }
         }
     ],
-    caption:{ type:String, default:"" },
-    occasion:{ type:String, default:"casual" },
-    visibility: {type:String, default: "Everyone"},
-    isOotd: { type:Boolean, default:false },
+    caption: { type: String, default: "" },
+    occasion: { type: String, default: "casual" },
+    visibility: { type: String, default: "Everyone" },
+    isOotd: { type: Boolean, default: false },
     createdAt: { type: Date, default: Date.now },
 });
 

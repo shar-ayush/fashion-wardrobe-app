@@ -9,17 +9,17 @@ import SignInScreen from '../screens/SignInScreen';
 import SignUpScreen from '../screens/SignUpScreen';
 import useAuthStore from '../store/authStore';
 import AiAssistantScreen from '../screens/AiAssistantScreen';
-import AiOutfitMakerScreen from '../screens/AiOutfitMakerScreen';
 import UploadOutfitScreen from '../screens/UploadOutfitScreen';
 import AITryOnScreen from '../screens/AITryOnScreen';
+import OutfitMakerScreen from '../screens/OutfitMakerScreen';
 
 const RootNavigator = () => {
   const Stack = createNativeStackNavigator();
-  const {isAuthenticated, initializeAuth} = useAuthStore(); 
+  const { isAuthenticated, initializeAuth } = useAuthStore();
 
   useEffect(() => {
     initializeAuth();
-  },[initializeAuth]);
+  }, [initializeAuth]);
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       {isAuthenticated ? (
@@ -29,10 +29,9 @@ const RootNavigator = () => {
           <Stack.Screen name="DesignRoom" component={DesignRoomScreen} />
           <Stack.Screen name="NewOutfit" component={NewOutfitScreen} />
           <Stack.Screen name="AIChat" component={AiAssistantScreen} />
-          <Stack.Screen name="AIOutfit" component={AiOutfitMakerScreen} />
           <Stack.Screen name="UploadOutfit" component={UploadOutfitScreen} />
           <Stack.Screen name="AITryOn" component={AITryOnScreen} />
-          
+          <Stack.Screen name="OutfitMaker" component={OutfitMakerScreen} />
         </>
       ) : (
         <>

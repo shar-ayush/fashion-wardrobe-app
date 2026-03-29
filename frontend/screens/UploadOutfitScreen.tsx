@@ -37,13 +37,13 @@ export default function UploadOutfitScreen() {
 
     setLoading(true);
     const formData = new FormData();
-    
+
     // Append Image
     //@ts-ignore
     const filename = image.split('/').pop();
     const match = /\.(\w+)$/.exec(filename);
     const type = match ? `image/${match[1]}` : `image/jpeg`;
-    
+
     //@ts-ignore
     formData.append('image', { uri: image, name: filename, type });
     formData.append('gender', gender);
@@ -62,7 +62,7 @@ export default function UploadOutfitScreen() {
       } catch (e) {
         throw new Error(`Server Error: ${text}`);
       }
-      
+
       if (response.ok && data.success) {
         Alert.alert("Success", "Outfit added to your closet!", [
           { text: "OK", onPress: () => handleReset() }
@@ -84,60 +84,65 @@ export default function UploadOutfitScreen() {
   };
 
   return (
-    <ScrollView 
-      className="flex-1 bg-white "
-      contentContainerClassName="p-5 items-center mt-8 pb-10" 
+    <ScrollView
+      className="flex-1 bg-ivory"
+      contentContainerClassName="p-5 items-center mt-8 pb-10"
     >
-      <Text className="text-2xl font-bold mt-5 mb-5 text-black">
+      <Text className="text-2xl font-bold mt-5 mb-5 text-espresso">
         Add New Outfit
       </Text>
 
       {/* Image Preview Area */}
-      <View className="w-[250px] h-[250px] bg-gray-100 justify-center items-center mb-5 rounded-xl overflow-hidden border border-gray-200">
+      <View className="w-[250px] h-[250px] bg-white justify-center items-center mb-5 rounded-xl overflow-hidden border border-sand">
         {image ? (
-          <Image source={{ uri: image }} className="w-full h-full rounded-xl" resizeMode="cover" />
+          <Image
+            source={{ uri: image }}
+            className="w-full h-full rounded-xl"
+            resizeMode="cover"
+          />
         ) : (
-          <Text className="text-gray-400 font-medium">No image selected</Text>
+          <Text className="text-taupe font-medium">
+            No image selected
+          </Text>
         )}
       </View>
 
       {/* Inputs - Camera/Gallery Buttons */}
       <View className="flex-row mb-5 items-center justify-around space-x-4">
-        <TouchableOpacity 
+        <TouchableOpacity
           onPress={() => pickImage(true)}
-          className="bg-gray-100 px-6 py-3 rounded-lg flex-row items-center"
+          className="bg-cream border border-sand px-6 py-3 rounded-lg flex-row items-center"
         >
-          <Ionicons name="camera" size={20} color="black" className="mr-2" />
-          <Text className="text-black font-semibold">Camera</Text>
+          <Ionicons name="camera" size={20} color="#3d2f20" className="mr-2" />
+          <Text className="text-espresso font-semibold">Camera</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity 
+        <TouchableOpacity
           onPress={() => pickImage(false)}
-          className="bg-gray-100 px-6 py-3 rounded-lg flex-row items-center ml-3"
+          className="bg-cream border border-sand px-6 py-3 rounded-lg flex-row items-center ml-3"
         >
-            <Ionicons name="image" size={20} color="black" className="mr-2" />
-          <Text className="text-black font-semibold">Gallery</Text>
+          <Ionicons name="image" size={20} color="#3d2f20" className="mr-2" />
+          <Text className="text-espresso font-semibold">Gallery</Text>
         </TouchableOpacity>
       </View>
 
       {/* Gender Selection */}
-      <Text className="self-start text-base font-semibold mb-3 text-black">
+      <Text className="self-start text-base font-semibold mb-3 text-espresso">
         Who is this for?
       </Text>
+
       <View className="flex-row mb-5">
         {['female', 'male'].map((g) => (
-          <TouchableOpacity 
-            key={g} 
-            className={`px-4 py-3 border rounded-full mr-3 mb-2 ${
-              gender === g 
-                ? 'bg-black border-black' 
-                : 'bg-transparent border-gray-300'
-            }`}
-            onPress={() => { setGender(g);}}
+          <TouchableOpacity
+            key={g}
+            className={`px-4 py-3 border rounded-full mr-3 mb-2 ${gender === g
+                ? 'bg-espresso border-espresso'
+                : 'bg-cream border-sand'
+              }`}
+            onPress={() => { setGender(g); }}
           >
-            <Text className={`font-medium ${
-              gender === g ? 'text-white' : 'text-gray-800'
-            }`}>
+            <Text className={`font-medium ${gender === g ? 'text-ivory' : 'text-espresso'
+              }`}>
               {g.toUpperCase()}
             </Text>
           </TouchableOpacity>
@@ -147,19 +152,21 @@ export default function UploadOutfitScreen() {
       {/* Upload Button */}
       <View className="w-full mt-2">
         {loading ? (
-          <ActivityIndicator size="large" color="#0000ff" />
+          <ActivityIndicator size="large" color="#3d2f20" />
         ) : (
           <TouchableOpacity
             onPress={handleUpload}
             disabled={!image}
-            className={`w-full h-15 py-4 rounded-xl items-center justify-center ${
-              !image ? "bg-gray-300" : "bg-black"
-            }`}
+            className={`w-full py-4 rounded-xl items-center justify-center ${!image ? "bg-sand" : "bg-espresso"
+              }`}
           >
-            <Text className="text-white font-bold text-lg">Upload to Closet</Text>
+            <Text className="text-ivory font-bold text-lg">
+              Upload to Closet
+            </Text>
           </TouchableOpacity>
         )}
       </View>
+
     </ScrollView>
   );
 }

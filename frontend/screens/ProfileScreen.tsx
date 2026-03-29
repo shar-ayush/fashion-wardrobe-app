@@ -45,18 +45,18 @@ const ProfileScreen = () => {
   const confirmLogout = () => {
     Alert.alert(
       "Logout",
-      "Are you sure you want to logout?",[
-        { text: "Cancel", style: "cancel" },
-        { text: "Logout", style: "destructive", onPress: () => logout() }
-      ])
+      "Are you sure you want to logout?", [
+      { text: "Cancel", style: "cancel" },
+      { text: "Logout", style: "destructive", onPress: () => logout() }
+    ])
   }
 
   useFocusEffect(
     useCallback(() => {
       const fetchOutfits = async () => {
         if (!user?._id || !token) return;
-        if (outfits.length === 0) setLoadingOutfits(true); 
-        
+        if (outfits.length === 0) setLoadingOutfits(true);
+
         try {
           const response = await axios.get(`${API_BASE_URL}/api/save-outfit/user/${user._id}`, {
             headers: { Authorization: `Bearer ${token}` }
@@ -70,7 +70,7 @@ const ProfileScreen = () => {
       };
 
       fetchOutfits();
-    }, [user?._id, token]) 
+    }, [user?._id, token])
   );
 
 
@@ -82,7 +82,7 @@ const ProfileScreen = () => {
 
         try {
           const response = await axios.get(`${API_BASE_URL}/api/upload-to-closet`, {
-            params: { userId: user._id } 
+            params: { userId: user._id }
           });
 
           if (response.data.success) {
@@ -90,7 +90,7 @@ const ProfileScreen = () => {
               _id: item._id,
               image: item.imageUrl,
               category: item.category,
-              subCategory: item.subCategory ,
+              subCategory: item.subCategory,
               gender: item.gender
             }));
             setClothes(mappedClothes);
@@ -103,7 +103,7 @@ const ProfileScreen = () => {
       };
 
       fetchClothes();
-    }, [user?._id]) 
+    }, [user?._id])
   );
 
   const filteredClothes = activeCategory === "All" ? clothes : clothes.filter((item) => {
@@ -157,17 +157,15 @@ const ProfileScreen = () => {
   // console.log("Outfits:", outfits);
 
   return (
-    <SafeAreaView className='flex-1 bg-gray-50'>
+    <SafeAreaView className='flex-1 bg-ivory'>
       <ScrollView>
         {/* HEADER SECTION */}
         <View className='flex-row justify-between items-center px-4 pt-2'>
-          <Text className='text-2xl font-bold'>{username}</Text>
+          <Text className='text-2xl font-bold text-espresso'>{username}</Text>
           <View className='flex-row gap-3'>
-            <Ionicons name='calendar-outline' color="black" size={24} />
-            <Ionicons name='pie-chart-outline' color="black" size={24} />
-            <Ionicons name='menu-outline' color="black" size={24} />
-            <TouchableOpacity className='items-center justify-center'>
-              <Ionicons name='log-out-outline' color="black" size={24} onPress={confirmLogout} />
+            <TouchableOpacity className='flex-row gap-3 items-center justify-center'>
+              <Text>Logout</Text>
+              <Ionicons name='log-out-outline' color="#3d2f20" size={24} onPress={confirmLogout} />
             </TouchableOpacity>
           </View>
         </View>
@@ -176,92 +174,78 @@ const ProfileScreen = () => {
         <View className='flex-row items-center px-4 mt-4'>
           <TouchableOpacity className='relative'>
             <Image className='h-20 w-20 rounded-full' source={{ uri: profileImage }} />
-            <View className='bg-black absolute bottom-0 right-0 rounded-full justify-center items-center w-6 h-6'>
-              <Text className='text-white text-lg text-center'>+</Text>
+            <View className='bg-espresso absolute bottom-0 right-0 rounded-full justify-center items-center w-6 h-6'>
+              <Text className='text-ivory text-lg text-center'>+</Text>
             </View>
           </TouchableOpacity>
 
           <View className='ml-4'>
-            <Text className='text-lg font-semibold'>{username}</Text>
-            <Text className='text-sm text-gray-500'>{email}</Text>
-            <View className='flex-row mt-1 gap-2'>
-              <Text className='text-gray-600'>
-                <Text className='font-bold'> {followerCount} </Text> Followers
-              </Text>
-              <Text className='text-gray-600'>
-                <Text className='font-bold'> {followingCount} </Text> Following
-              </Text>
-            </View>
+            <Text className='text-xl font-semibold text-espresso'>{username}</Text>
+            <Text className='text-sm text-mocha'>{email}</Text>
           </View>
         </View>
 
-        {/* BUTTONS */}
-        <View className='flex-row px-4 gap-3 mt-4 '>
-          <TouchableOpacity className='flex-1 bg-gray-200 rounded-lg py-2 items-center'>
-            <Text className='font-medium'>Edit Profile</Text>
-          </TouchableOpacity>
-          <TouchableOpacity className='flex-1 bg-gray-200 rounded-lg py-2 items-center'>
-            <Text className='font-medium'>Share Profile</Text>
-          </TouchableOpacity>
-        </View>
-
         {/* TABS */}
-        <View className='flex-row justify-around border-b border-gray-300 mt-5'>
+        <View className='flex-row justify-around border-b border-sand mt-5'>
           {["Clothes", "Outfits", "Collections"].map((tab) => (
             <TouchableOpacity key={tab} onPress={() => setActiveTab(tab)} className='pb-2'>
-              <Text className={`text-base font-medium ${activeTab === tab ? "text-black" : "text-gray-500"}`}>{tab}</Text>
-              {activeTab === tab && <View className='h-0.5 bg-black mt-2' />}
+              <Text className={`text-base font-medium ${activeTab === tab ? "text-espresso" : "text-taupe"}`}>
+                {tab}
+              </Text>
+              {activeTab === tab && <View className='h-0.5 bg-terracotta mt-2' />}
             </TouchableOpacity>
           ))}
         </View>
 
         {/* CLOTHES FILTER CATEGORIES */}
         {activeTab === "Clothes" && (
-            <ScrollView horizontal showsHorizontalScrollIndicator={false} className='mt-3 pl-4 mb-2'>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} className='mt-3 pl-4 mb-2'>
             {["All", "Tops", "Bottoms", "Footwear", "Outerwear", "Accessories"].map((category) => (
-                <TouchableOpacity key={category} onPress={() => setActiveCategory(category)} className={`px-3 mr-4 rounded-full ${activeCategory === category ? "text-black" : "text-gray-500"}`}>
-                <Text className={`text-base font-medium ${activeCategory === category ? "text-black" : "text-gray-500"}`}>{category}</Text>
-                {activeCategory === category && <View className='h-0.5 bg-black mt-2' />}
-                </TouchableOpacity>
+              <TouchableOpacity
+                key={category}
+                onPress={() => setActiveCategory(category)}
+                className={`px-3 mr-4 rounded-full`}
+              >
+                <Text className={`text-base font-medium ${activeCategory === category ? "text-espresso" : "text-taupe"}`}>
+                  {category}
+                </Text>
+                {activeCategory === category && <View className='h-0.5 bg-terracotta mt-2' />}
+              </TouchableOpacity>
             ))}
-            </ScrollView>
+          </ScrollView>
         )}
 
         {/* TAB CONTENT: CLOTHES */}
         {activeTab === "Clothes" && (
           <View className='px-4 mt-2'>
             {loadingClothes ? (
-                 <ActivityIndicator size="large" color="#000" className="mt-10" />
+              <ActivityIndicator size="large" color="#000" className="mt-10" />
             ) : filteredClothes.length === 0 ? (
               <View className="mt-10 items-center">
-                  <Text className="text-gray-500 text-base">No clothes found.</Text>
-                  <Text className="text-gray-400 text-sm mt-1">Upload items to your closet to see them here.</Text>
+                <Text className="text-mocha text-base">No clothes found.</Text>
+                <Text className="text-taupe text-sm mt-1">
+                  Upload items to your closet to see them here.
+                </Text>
               </View>
             ) : (
               <View className='flex-row flex-wrap'>
                 {filteredClothes.map((item, index) => (
                   <View key={`cloth-${index}-${item._id}`} className='w-1/3 p-1.5'>
                     <View
-                      style={{
-                        position: 'relative',
-                        shadowColor: "#000",
-                        shadowOffset: { width: 0, height: 2 },
-                        shadowOpacity: 0.1,
-                        shadowRadius: 4,
-                        elevation: 3,
-                      }}
-                      className='bg-white rounded-lg shadow-sm border border-gray-100 overflow-hidden'
+                      className='bg-white rounded-lg border border-sand overflow-hidden'
                     >
                       <Image className='w-full h-32' source={{ uri: item?.image }} resizeMode='contain' />
+
                       <TouchableOpacity
                         onPress={() => confirmDelete(item._id)}
-                        className='absolute top-1 right-1 bg-gray-300 rounded-full p-1'
+                        className='absolute top-1 right-1 bg-cream rounded-full p-1'
                       >
-                        <Ionicons name='trash' color='gray' size={14} />
+                        <Ionicons name='trash' color='#a89880' size={14} />
                       </TouchableOpacity>
+
                       <View className='p-2'>
-                        <Text className='text-xs font-medium text-gray-600 capitalize'>
-                            {item?.subCategory} 
+                        <Text className='text-xs font-medium text-mocha capitalize'>
+                          {item?.subCategory}
                         </Text>
                       </View>
                     </View>
@@ -276,46 +260,50 @@ const ProfileScreen = () => {
         {activeTab === "Outfits" && (
           <View className="px-2 mt-4">
             {loadingOutfits ? (
-              <ActivityIndicator size={"large"} color="#000" />
+              <ActivityIndicator size={"large"} color="#3d2f20" />
             ) : outfits.length === 0 ? (
               <View className="items-center mt-10">
-                  <Text className="text-gray-500">No Outfits saved yet.</Text>
+                <Text className="text-gray-500">No Outfits saved yet.</Text>
               </View>
             ) : (
               <View className='flex-row flex-wrap'>
                 {outfits?.map((outfit) => (
                   <View key={outfit._id} className='w-1/2 p-1.5'>
-                    <View 
-                    style={{
+                    <View
+                      style={{
                         shadowColor: "#000",
                         shadowOffset: { width: 0, height: 2 },
                         shadowOpacity: 0.1,
                         shadowRadius: 4,
                         elevation: 3,
                       }}
-                    className='bg-white rounded-lg shadow-sm border border-gray-100 p-2'
+                      className='bg-white rounded-lg border border-sand p-2'
                     >
                       {/* Items  */}
                       <View className="flex-row flex-wrap justify-center h-40 overflow-hidden">
                         {sortItems(outfit.items).map((item, index) => (
-                        <Image 
-                        key={`${outfit._id}-${item._id || index}`}
-                        source={{ uri: item.image }} 
-                        className='w-24 h-24'
-                        resizeMode='contain'
-                        style={{ margin: -5 }} 
-                        />
+                          <Image
+                            key={`${outfit._id}-${item._id || index}`}
+                            source={{ uri: item.image }}
+                            className='w-24 h-24'
+                            resizeMode='contain'
+                            style={{ margin: -5 }}
+                          />
                         ))}
                       </View>
-                      
-                      <View className="mt-2 border-t border-gray-100 pt-2">
-                        <Text className='text-sm font-semibold text-gray-800'>{outfit?.date || "No Date"}</Text>
-                        <Text className='text-xs font-medium text-gray-600'>{outfit?.occassion || "Casual"}</Text>
+
+                      <View className="mt-2 border-t border-sand pt-2">
+                        <Text className='text-sm font-semibold text-espresso'>
+                          {outfit?.date || "No Date"}
+                        </Text>
+                        <Text className='text-xs font-medium text-mocha'>
+                          {outfit?.occassion || "Casual"}
+                        </Text>
                       </View>
                     </View>
                   </View>
                 ))}
-                
+
               </View>
             )}
           </View>
