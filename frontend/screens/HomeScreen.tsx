@@ -17,13 +17,7 @@ const features = [
     screen: "AIChat",
   },
   {
-    title: "AI Outfit Maker",
-    image:
-      "https://i.pinimg.com/736x/50/83/0e/50830e372ee844c1f429b8ef89e26fd1.jpg",
-    screen: "AIOutfit",
-  },
-  {
-    title: "AI Try On",
+    title: "AI Virtual Try On",
     image:
       "https://i.pinimg.com/736x/c2/78/95/c2789530a2dc8c9dbfd4aa5e2e70d608.jpg",
     screen: "AITryOn",
@@ -34,49 +28,22 @@ const features = [
       "https://i.pinimg.com/736x/84/bf/ce/84bfce1e46977d50631c4ef2f72f83b1.jpg",
     screen: "UploadOutfit",
   },
-];
+  {
+    title: "AI Outfit Maker",
+    image:
+      "https://i.pinimg.com/736x/50/83/0e/50830e372ee844c1f429b8ef89e26fd1.jpg",
+    screen: "OutfitMaker",
+  },
 
-const initialStories = [
-  {
-    username: "Your OOTD",
-    avatar: "https://picsum.photos/100/100?random=8",
-    isOwn: true,
-    viewed: false,
-  },
-  {
-    username: "_trishwushres",
-    avatar: "https://picsum.photos/100/100?random=10",
-    isOwn: false,
-    viewed: false,
-  },
-  {
-    username: "myglam",
-    avatar: "https://picsum.photos/100/100?random=11",
-    isOwn: false,
-    viewed: false,
-  },
-  {
-    username: "stylist",
-    avatar: "https://picsum.photos/100/100?random=12",
-    isOwn: false,
-    viewed: false,
-  },
 ];
-
 
 
 const HomeScreen = () => {
   const navigation = useNavigation<any>();
   const isFocused = useIsFocused();
   const [savedOutfits, setSavedOutfits] = useState<Record<string, any>>({});
-  const [stories, setStories] = useState(initialStories);
-  const [showStory, setShowStory] = useState(false);
   const [userId, setUserId] = useState("");
-  const [currentStory, setCurrentStory] = useState<{
-    username: string;
-    avatar: string;
-    duration: number;
-  } | null>(null);
+
 
   const generateDates = () => {
     const today = moment();
@@ -85,7 +52,7 @@ const HomeScreen = () => {
       const dateObj = today.clone().add(i, 'days');
       dates.push({
         label: dateObj.format('ddd, Do MMM'),
-        dayName: dateObj.format('dddd'),      
+        dayName: dateObj.format('dddd'),
         isToday: i === 0
       })
     }
@@ -96,19 +63,19 @@ const HomeScreen = () => {
   // 2. Fetch User & Outfits
   useFocusEffect(
     useCallback(() => {
-        const init = async () => {
-            try {
-                const token = await AsyncStorage.getItem('token');
-                if (token) {
-                    const decoded = jwtDecode(token) as { id: string };
-                    setUserId(decoded.id);
-                    await fetchSavedOutfits(decoded.id, token);
-                }
-            } catch (error) {
-                console.error("Initialization error:", error);
-            }
-        };
-        init();
+      const init = async () => {
+        try {
+          const token = await AsyncStorage.getItem('token');
+          if (token) {
+            const decoded = jwtDecode(token) as { id: string };
+            setUserId(decoded.id);
+            await fetchSavedOutfits(decoded.id, token);
+          }
+        } catch (error) {
+          console.error("Initialization error:", error);
+        }
+      };
+      init();
     }, [])
   );
   const fetchSavedOutfits = async (uid: string, token: string) => {
@@ -116,14 +83,14 @@ const HomeScreen = () => {
       const response = await axios.get(`${process.env.EXPO_PUBLIC_API_BASE_URL}/api/save-outfit/user/${uid}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
-      
+
       // Transform array to Object { "Mon, 1st Jan": [items...] }
       const outfitsMap = response.data.reduce((acc: { [key: string]: any[] }, outfit: any) => {
         // Only take the items array from the outfit object
-        acc[outfit.date] = outfit.items; 
+        acc[outfit.date] = outfit.items;
         return acc;
       }, {});
-      
+
       setSavedOutfits(outfitsMap);
     } catch (error) {
       console.error("Error fetching saved outfits:", error);
@@ -134,35 +101,95 @@ const HomeScreen = () => {
   const getOutfitPreview = (items: any[]) => {
     if (!items || items.length === 0) return null;
 
-    // Check against All ssible types for Tops and Bottoms
-    const top = items.find((i: any) => ["shirt", "tops", "mshirts"].includes(i.type));
-    const bottom = items.find((i: any) => ["pants", "mpants", "skirt", "skirts"].includes(i.type));
-    const shoes = items.find((i: any) => i.type === "shoes");
+    // Match against new Cloth schema category values
+    const top = items.find((i: any) => ["top", "outerwear"].includes(i.type));
+    const bottom = items.find((i: any) => i.type === "bottom");
+    const shoes = items.find((i: any) => i.type === "footwear");
 
-    // If no specific types found, just take the first item
+    // If no specific types found, fall back to first two items
     const displayTop = top || items[0];
     const displayBottom = bottom || (items.length > 1 ? items[1] : null);
 
-    return { top: displayTop, bottom: displayBottom };
+    return { top: displayTop, bottom: displayBottom, shoes };
   };
 
+  const todayLabel = moment().format('ddd, Do MMM');
+  const todaysItems = savedOutfits[todayLabel];
+  const todaysPreview = todaysItems ? getOutfitPreview(todaysItems) : null;
+
   return (
-    <SafeAreaView className='flex-1 bg-white'>
-      <ScrollView className='flex-1 bg-white'>
-        <View className='flex-row items-center justify-between px-4 pt-2'>
-          <Text className='text-2xl font-bold'>Outfit Wardrobe</Text>
-          <View className='flex-row items-center gap-3'>
-            <Ionicons name="notifications-outline" size={24} color="black" />
-            <Ionicons name="search-outline" size={24} color="black" />
+    <SafeAreaView className='flex-1 bg-ivory'>
+      <ScrollView className='flex-1 bg-ivory'>
+
+        {/* HEADER */}
+        <View className='flex-row items-center justify-between px-4 pt-2 mb-2 mt-1'>
+          <Text className='text-3xl font-bold text-espresso'>
+            Welcome to Outfit AI
+          </Text>
+        </View>
+
+        {/* TODAY'S PICK */}
+        <View className="px-4 mt-2">
+          <View className="bg-cream border border-sand rounded-2xl p-4 flex-row justify-between items-center">
+            {/* LEFT CONTENT */}
+            <View className="flex-1 pr-3">
+              <Text className="text-taupe text-xs tracking-[3px] mb-1">TODAY'S PICK</Text>
+              <Text className="text-espresso text-xl font-semibold">{todaysPreview ? "Your Outfit" : "No Outfit"}</Text>
+              <Text className="text-mocha text-sm mt-1">
+                {todaysItems ? `${todaysItems.length} items matched` : "Plan your outfit"}
+              </Text>
+            </View>
+
+            {/* RIGHT PREVIEW STACK */}
+            <View className="items-center justify-center">
+              {todaysPreview ? (
+                <>
+                  {todaysPreview.top && (
+                    <Image
+                      source={{ uri: todaysPreview.top.image }}
+                      className="w-20 h-20 mb-[-10px] z-20"
+                      resizeMode="contain"
+                    />
+                  )}
+
+                  {todaysPreview.bottom && (
+                    <Image
+                      source={{ uri: todaysPreview.bottom.image }}
+                      className="w-20 h-20 mb-[-10px] z-10"
+                      resizeMode="contain"
+                    />
+                  )}
+
+                  {todaysPreview.shoes && (
+                    <Image
+                      source={{ uri: todaysPreview.shoes.image }}
+                      className="w-16 h-16"
+                      resizeMode="contain"
+                    />
+                  )}
+                </>
+              ) : (
+                <View className="w-16 h-16 bg-sand rounded-xl items-center justify-center">
+                  <Ionicons name="shirt-outline" size={20} color="#a89880" />
+                </View>
+              )}
+
+            </View>
+
           </View>
         </View>
 
+        {/* WEEK TITLE */}
         <View className='flex-row items-center justify-between mt-6 px-4'>
-          <Text className='text-lg font-semibold' style={{ flex: 1, flexWrap: 'wrap' }}>Your week</Text>
-          <Text className='text-gray-500' style={{ marginLeft: 8 }}>Planner</Text>
+          <Text className='text-lg font-semibold text-espresso' style={{ flex: 1, flexWrap: 'wrap' }}>
+            Your week
+          </Text>
+          <Text className='text-mocha' style={{ marginLeft: 8 }}>
+            Planner
+          </Text>
         </View>
 
-        {/* Weekly Planner ScrollView */}
+        {/* WEEKLY PLANNER */}
         <ScrollView horizontal showsHorizontalScrollIndicator={false} className='mt-4 pl-4 pb-4'>
           {dates?.map((day, idx) => {
             const outfitItems = savedOutfits[day.label];
@@ -173,114 +200,97 @@ const HomeScreen = () => {
                 <Pressable
                   onPress={() => {
                     navigation.navigate("AddOutfit", {
-                      date: day.label, 
+                      date: day.label,
                       savedOutfits,
                     })
                   }}
-                  className={`h-44 w-28 rounded-2xl items-center justify-center overflow-hidden border ${
-                    day.isToday ? 'border-black bg-gray-50' : 'border-gray-100 bg-white'
-                  } shadow-sm`}
-                  style={{ elevation: 2 }}
+                  className={`h-44 w-28 rounded-2xl items-center justify-center overflow-hidden border ${day.isToday
+                    ? 'border-espresso bg-cream'
+                    : 'border-sand bg-white'
+                    }`}
                 >
                   {!preview ? (
-                    // Empty State
-                    <View className='w-full h-full flex items-center justify-center bg-gray-50'>
-                      <View className='bg-white p-2 rounded-full shadow-sm'>
-                         <Ionicons name="add" size={24} color="#9CA3AF" />
+                    <View className='w-full h-full flex items-center justify-center bg-cream'>
+                      <View className='bg-white p-2 rounded-full border border-sand'>
+                        <Ionicons name="add" size={24} color="#a89880" />
                       </View>
                     </View>
                   ) : (
-                    // Filled State
                     <View className='w-full h-full items-center justify-center py-2'>
-                        {/* Render Top */}
-                        {preview.top && (
-                            <Image 
-                                source={{ uri: preview.top.image }} 
-                                className='w-20 h-20 mb-[-10px] z-10' 
-                                resizeMode='contain' 
-                            />
-                        )}
-                        {/* Render Bottom */}
-                        {preview.bottom && (
-                            <Image 
-                                source={{ uri: preview.bottom.image }} 
-                                className='w-20 h-20' 
-                                resizeMode='contain' 
-                            />
-                        )}
-                        {/* If only one item, center it better */}
-                        {!preview.bottom && !preview.top && (
-                             <Text className="text-xs text-gray-400">Items saved</Text>
-                        )}
+                      {preview.top && (
+                        <Image
+                          source={{ uri: preview.top.image }}
+                          className='w-20 h-20 mb-[-10px] z-10'
+                          resizeMode='contain'
+                        />
+                      )}
+                      {preview.bottom && (
+                        <Image
+                          source={{ uri: preview.bottom.image }}
+                          className='w-20 h-20'
+                          resizeMode='contain'
+                        />
+                      )}
+                      {!preview.bottom && !preview.top && (
+                        <Text className="text-xs text-taupe">
+                          Items saved
+                        </Text>
+                      )}
                     </View>
                   )}
                 </Pressable>
 
-                {/* Date Label */}
+                {/* DATE */}
                 <View className='flex-row justify-center items-center mt-2'>
-                    <Text className={`text-[12px] ${day.isToday ? 'text-black' : 'text-gray-800'}`}>
-                        {day.label.split(',')[0]} {/* Mon */}
-                    </Text>
-                    <Text className='text-[12px] text-gray-500'>
-                        {day.label.split(',')[1]} {/* 1st Jan */}
-                    </Text>
+                  <Text className={`text-[12px] ${day.isToday ? 'text-espresso' : 'text-mocha'
+                    }`}>
+                    {day.label.split(',')[0]}
+                  </Text>
+                  <Text className='text-[12px] text-taupe'>
+                    {day.label.split(',')[1]}
+                  </Text>
                 </View>
               </View>
             )
           })}
         </ScrollView>
 
+
+
+        {/* FEATURES GRID */}
         <View className='flex-row flex-wrap justify-between px-4 mt-6'>
           {features.map((feature, idx) => (
             <Pressable
               onPress={() => navigation.navigate(feature.screen)}
-              style={{
-                backgroundColor: ["#FFF1F2", "#EFF6FF", "#F0FFF4", "#FFFBEB"][
-                  idx % 4
-                ],
-                elevation: 3,
-              }}
               key={feature.title || idx}
-              className='w-[48%] h-36 mb-4 rounded-2xl shadow-md overflow-hidden'>
+              className='w-[48%] h-36 mb-4 rounded-2xl border border-sand bg-cream overflow-hidden'
+            >
               <View className='p-3'>
-                <Text className='font-bold text-[16px] text-gray-800'>{feature.title}</Text>
-                <Text className='text-xs text-gray-500 mt-1'>
-                  {idx === 0
-                    ? "Try Outfits Virtually"
-                    : idx === 1
-                      ? "AI Created New Looks"
-                      : idx === 2
-                        ? "Instant Try On"
-                        : "Add Outfits to Your Closet"
-                  }
+                <Text className='font-bold text-[16px] text-espresso'>
+                  {feature.title}
                 </Text>
 
+                <Text className='text-xs text-mocha mt-1'>
+                  {idx === 0
+                    ? "Ask the fashion assistant"
+                    : idx === 1
+                      ? "Try any outfit virtually"
+                      : idx === 2
+                        ? "Add items to your closet"
+                        : "Ask AI to design an outfit for you"
+                  }
+                </Text>
               </View>
+
               <Image
                 style={{ transform: [{ rotate: '12deg' }], opacity: 0.9 }}
                 className="w-20 h-20 absolute bottom-[-3] right-[-1] rounded-lg"
-                source={{ uri: feature.image }} />
+                source={{ uri: feature.image }}
+              />
             </Pressable>
           ))}
         </View>
-{/* 
-        <View className='flex-row justify-between items-center mt-6 px-4'>
-          <Text className='text-lg font-semibold'>Popular this week</Text>
-          <Text className='text-gray-500'>More</Text>
-        </View>
 
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} className='mt-4 pl-4'>
-          {popularItems?.map((item, idx) => (
-            <View key={item.username + item.itemName || idx} className='w-36 mr-4'>
-              <Image className='w-36 h-44 rounded-lg' source={{ uri: item?.image }} />
-              <View className='flex-row items-center mt-2'>
-                <Image className='w-6 h-6 rounded-full mr-2' source={{ uri: item?.profile }} />
-                <Text className='text-xs font-medium'>{item.username}</Text>
-              </View>
-              <Text className='text-xs text-gray-500 mt-1'>{item.itemName}</Text>
-            </View>
-          ))}
-        </ScrollView> */}
       </ScrollView>
     </SafeAreaView>
   )

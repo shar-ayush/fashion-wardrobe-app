@@ -9,8 +9,8 @@ const API_BASE_URL = process.env.EXPO_PUBLIC_API_BASE_URL;
 
 
 const AddOutfitScreen = () => {
-    const route  = useRoute();
-    const {date, savedOutfits} = route?.params as {date: string, savedOutfits: Record<string, any>};
+    const route = useRoute();
+    const { date, savedOutfits } = route?.params as { date: string, savedOutfits: Record<string, any> };
     const navigation = useNavigation();
     // Auth & State
     const { user } = useAuthStore();
@@ -30,10 +30,10 @@ const AddOutfitScreen = () => {
 
                 if (response.data.success) {
                     const mappedClothes = response.data.data.map((item: any) => ({
-                        id: item._id,       
-                        image: item.imageUrl, 
-                        type: item.type,
-                        gender: item.gender   // 'male' | 'female' | 'unisex'
+                        id: item._id,
+                        image: item.imageUrl,
+                        type: item.category,   // "top" | "bottom" | "footwear" | "outerwear" | "accessory"
+                        gender: item.gender    // 'male' | 'female' | 'unisex'
                     }));
                     setClothes(mappedClothes);
                 }
@@ -54,107 +54,118 @@ const AddOutfitScreen = () => {
     const handleNext = () => {
         const selectedItems = clothes.filter((item) => selected.includes(item?.id));
         // @ts-ignore
-        navigation.navigate("DesignRoom",{
+        navigation.navigate("DesignRoom", {
             selectedItems,
-            date, 
+            date,
             savedOutfits
         })
     }
-  return (
-    <SafeAreaView className='flex-1 bg-white'>
-      {/* Header */}
-      <View className='flex-row items-center justify-between px-4'>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
-            <Ionicons name='chevron-back' size={28} color="black" />
-        </TouchableOpacity>
-        <Text className='text-lg font-semibold'>Add Outfit</Text>
-        <Text className='text-gray-500'>{date}</Text>
-      </View>
-
-      {/* Action Buttons */}
-      <View className='flex-row justify-around mt-4 px-4'>
-        <TouchableOpacity className='bg-gray-100 w-[30%] py-3 rounded-lg items-center'>
-            <Ionicons name='camera-outline' size={22} color="black" />
-            <Text className='font-md mt-1'>Selfie</Text>
-        </TouchableOpacity>
-        <TouchableOpacity className='bg-gray-100 w-[30%] py-3 rounded-lg items-center'>
-            <Ionicons name='sparkles-outline' size={22} color="black" />
-            <Text className='font-md mt-1'>Suggestions</Text>
-        </TouchableOpacity>
-        <TouchableOpacity className='bg-gray-100 w-[30%] py-3 rounded-lg items-center'>
-            <Ionicons name='shirt-outline' size={22} color="black" />
-            <Text className='font-md mt-1'>Saved Outfits</Text>
-        </TouchableOpacity>
-      </View>
-
-      {/* Clothes Grid */}
-      <ScrollView className='flex-1 mt-4'>
-        <Text className='text-lg font-semibold px-4 mt-4'>Your Clothes</Text>
-        
-        {loading ? (
-             <ActivityIndicator size="large" color="#000" className="mt-10" />
-        ) : clothes.length === 0 ? (
-            <Text className="text-gray-500 text-center mt-10">No clothes found. Upload some first!</Text>
-        ) : (
-            <View className='flex-row flex-wrap px-4 mt-2 mb-20'>
-                {clothes.map((item) => (
-                    <TouchableOpacity 
-                    key={item.id}
-                    className='w-1/3 p-1 relative '
-                    onPress={() => toggleSelect(item?.id)}
-                    >
-                        <Image 
-                        className="w-full h-32 rounded-md" 
-                        source={{uri: item?.image}}
-                        resizeMode='contain'
-                        />
-                        
-                        {/* Gender Icon Badge */}
-                        <View className='absolute top-2 right-2 w-6 h-6 rounded-full border-2 items-center justify-center bg-white/80 border-gray-200'>
-                            <Text className='font-lg font-bold'>
-                                {/* Backend sends 'male'/'female', mock sent 'm'/'f' - logic updated */}
-                                {item?.gender === "male" ? "♂" : item?.gender === "female" ? "♀" : "⚪"}
-                            </Text>
-                        </View>
-
-                        {/* Selection Checkmark */}
-                        <View className={`absolute top-2 left-2 w-6 h-6 rounded-full border-2 ${selected.includes(item.id) ? 'bg-black border-black' : 'border-gray-400'} items-center justify-center`} >
-                            {selected.includes(item.id) && (
-                                <Ionicons name="checkmark" size={16} color='white'/>
-                            )}
-                        </View>
-                    </TouchableOpacity>
-                ))}
+    return (
+        <SafeAreaView className='flex-1 bg-ivory'>
+            {/* Header */}
+            <View className='flex-row items-center justify-between px-4'>
+                <TouchableOpacity onPress={() => navigation.goBack()}>
+                    <Ionicons name='chevron-back' size={28} color="black" />
+                </TouchableOpacity>
+                <Text className='text-lg font-semibold'>Add Outfit</Text>
+                <Text className='text-gray-500'>{date}</Text>
             </View>
-        )}
-      </ScrollView>
 
-      {/* Bottom Selection Bar */}
-      {selected.length > 0 && (
-        <View className='absolute bottom-0 left-0 right-0 bg-white p-3 border-t border-gray-200'>
-            <ScrollView horizontal showsHorizontalScrollIndicator={false} className=''>
-                {selected?.map((id) => {
-                    const item = clothes.find((cloth) => cloth.id === id);
-                    return(
-                        <Image 
-                        key={id}
-                        source={{uri:item?.image}}
-                        className='w-16 h-16 mr-3 rounded-md border border-gray-100'
-                        resizeMode='contain'
-                        />
-                    )
-                })}
+            {/* Action Buttons */}
+            <View className='flex-row justify-around mt-4 px-4'>
+                <TouchableOpacity className='bg-cream border border-sand w-[30%] py-3 rounded-lg items-center'>
+                    <Ionicons name='camera-outline' size={22} color="#3d2f20" />
+                    <Text className='font-md mt-1 text-espresso'>Selfie</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity className='bg-cream border border-sand w-[30%] py-3 rounded-lg items-center'>
+                    <Ionicons name='sparkles-outline' size={22} color="#3d2f20" />
+                    <Text className='font-md mt-1 text-espresso'>Suggestions</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity className='bg-cream border border-sand w-[30%] py-3 rounded-lg items-center'>
+                    <Ionicons name='shirt-outline' size={22} color="#3d2f20" />
+                    <Text className='font-md mt-1 text-espresso'>Saved Outfits</Text>
+                </TouchableOpacity>
+            </View>
+
+            {/* Clothes Grid */}
+            <ScrollView className='flex-1 mt-4'>
+                <Text className='text-lg font-semibold text-espresso px-4 mt-4'>
+                    Your Clothes
+                </Text>
+
+                {loading ? (
+                    <ActivityIndicator size="large" color="#3d2f20" className="mt-10" />
+                ) : clothes.length === 0 ? (
+                    <Text className="text-mocha text-center mt-10">
+                        No clothes found. Upload some first!
+                    </Text>
+                ) : (
+                    <View className='flex-row flex-wrap px-4 mt-2 mb-20'>
+                        {clothes.map((item) => (
+                            <TouchableOpacity
+                                key={item.id}
+                                className='w-1/3 p-1 relative'
+                                onPress={() => toggleSelect(item?.id)}
+                            >
+                                <Image
+                                    className="w-full h-32 rounded-md bg-white"
+                                    source={{ uri: item?.image }}
+                                    resizeMode='contain'
+                                />
+
+                                {/* Gender Icon Badge */}
+                                <View className='absolute top-2 right-2 w-6 h-6 rounded-full border items-center justify-center bg-white/80 border-sand'>
+                                    <Text className='font-lg font-bold text-espresso'>
+                                        {item?.gender === "male" ? "♂" : item?.gender === "female" ? "♀" : "⚪"}
+                                    </Text>
+                                </View>
+
+                                {/* Selection Checkmark */}
+                                <View
+                                    className={`absolute top-2 left-2 w-6 h-6 rounded-full border-2 ${selected.includes(item.id)
+                                        ? 'bg-espresso border-espresso'
+                                        : 'border-sand'
+                                        } items-center justify-center`}
+                                >
+                                    {selected.includes(item.id) && (
+                                        <Ionicons name="checkmark" size={16} color='#faf7f2' />
+                                    )}
+                                </View>
+                            </TouchableOpacity>
+                        ))}
+                    </View>
+                )}
             </ScrollView>
-            <TouchableOpacity 
-            className='bg-black py-3 rounded-lg mt-3 mb-3 items-center self-end w-24'
-            onPress={handleNext}
-            >
-                <Text className='text-white font-semibold'>Next</Text>
-            </TouchableOpacity>
-        </View>
-      )}
-    </SafeAreaView>
-  )
+
+            {/* Bottom Selection Bar */}
+            {selected.length > 0 && (
+                <View className='absolute bottom-0 left-0 right-0 bg-ivory p-3 border-t border-sand'>
+                    <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+                        {selected?.map((id) => {
+                            const item = clothes.find((cloth) => cloth.id === id);
+                            return (
+                                <Image
+                                    key={id}
+                                    source={{ uri: item?.image }}
+                                    className='w-16 h-16 mr-3 rounded-md border border-sand bg-white'
+                                    resizeMode='contain'
+                                />
+                            )
+                        })}
+                    </ScrollView>
+
+                    <TouchableOpacity
+                        className='bg-espresso py-3 rounded-lg mt-3 mb-3 items-center self-end w-24'
+                        onPress={handleNext}
+                    >
+                        <Text className='text-ivory font-semibold'>Next</Text>
+                    </TouchableOpacity>
+                </View>
+            )}
+        </SafeAreaView>
+    )
 }
 
 export default AddOutfitScreen

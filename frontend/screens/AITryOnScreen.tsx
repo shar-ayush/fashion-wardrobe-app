@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
-import { 
-  View, 
-  Text, 
-  TouchableOpacity, 
-  Image, 
-  ScrollView, 
-  ActivityIndicator, 
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  Image,
+  ScrollView,
+  ActivityIndicator,
   Alert,
 } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
@@ -21,11 +21,11 @@ const AITryOnScreen = () => {
   const [apparelImage, setApparelImage] = useState(null);
   const [resultImage, setResultImage] = useState(null);
   const [loading, setLoading] = useState(false);
-  
+
   //@ts-ignore
   const pickImage = async (setImageState) => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    
+
     if (status !== 'granted') {
       Alert.alert('Permission needed', 'We need access to your gallery to upload images.');
       return;
@@ -33,8 +33,8 @@ const AITryOnScreen = () => {
 
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true, 
-      aspect: [3, 4],     
+      allowsEditing: true,
+      aspect: [3, 4],
       quality: 0.8,
     });
 
@@ -72,7 +72,7 @@ const AITryOnScreen = () => {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
-        timeout: 90000, 
+        timeout: 90000,
       });
 
       if (response.data.success) {
@@ -94,7 +94,7 @@ const AITryOnScreen = () => {
 
     try {
       const { status } = await MediaLibrary.requestPermissionsAsync(false, ['photo']);
-      
+
       if (status !== 'granted') {
         Alert.alert('Permission needed', 'We need permission to save to your gallery.');
         return;
@@ -117,7 +117,7 @@ const AITryOnScreen = () => {
 
       // 5. Save to Gallery
       await MediaLibrary.createAssetAsync(targetFile.uri);
-      
+
       Alert.alert('Success', 'Image saved to your gallery! 🎉');
 
       // Cleanup
@@ -133,72 +133,75 @@ const AITryOnScreen = () => {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-white">
+    <SafeAreaView className="flex-1 bg-ivory">
       <ScrollView className="flex-1 px-5 py-4">
-        <Text className="text-2xl font-bold text-gray-800 mb-6 text-center">Virtual Fitting Room</Text>
+        <Text className="text-2xl font-bold text-espresso mb-6 text-center">Virtual Fitting Room</Text>
         <View className="flex-row justify-between mb-8">
           {/* Person Image Upload */}
           <View className="w-[48%] items-center">
-            <Text className="font-semibold text-gray-600 mb-2">You</Text>
-            <TouchableOpacity 
+            <Text className="font-semibold text-mocha mb-2">You</Text>
+            <TouchableOpacity
               onPress={() => pickImage(setPersonImage)}
-              className="w-full h-48 bg-gray-100 rounded-2xl border-2 border-dashed border-gray-300 justify-center items-center overflow-hidden"
+              className="w-full h-48 bg-white rounded-2xl border-2 border-dashed border-sand justify-center items-center overflow-hidden"
             >
               {personImage ? (
                 <Image source={{ uri: personImage }} className="w-full h-full" resizeMode="cover" />
               ) : (
-                <Text className="text-gray-400 text-center px-2">Tap to Upload Photo</Text>
+                <Text className="text-taupe text-center px-2">Tap to Upload Photo</Text>
               )}
             </TouchableOpacity>
           </View>
 
           {/* Apparel Image Upload */}
           <View className="w-[48%] items-center">
-            <Text className="font-semibold text-gray-600 mb-2">Outfit</Text>
-            <TouchableOpacity 
+            <Text className="font-semibold text-mocha mb-2">Outfit</Text>
+            <TouchableOpacity
               onPress={() => pickImage(setApparelImage)}
-              className="w-full h-48 bg-gray-100 rounded-2xl border-2 border-dashed border-gray-300 justify-center items-center overflow-hidden"
+              className="w-full h-48 bg-white rounded-2xl border-2 border-dashed border-sand justify-center items-center overflow-hidden"
             >
               {apparelImage ? (
                 <Image source={{ uri: apparelImage }} className="w-full h-full" resizeMode="cover" />
               ) : (
-                <Text className="text-gray-400 text-center px-2">Tap to Upload Outfit</Text>
+                <Text className="text-taupe text-center px-2">Tap to Upload Outfit</Text>
               )}
             </TouchableOpacity>
           </View>
 
         </View>
 
-        <TouchableOpacity 
+        <TouchableOpacity
           onPress={handleTryOn}
           disabled={loading}
-          className={`w-full py-4 rounded-xl mb-8 items-center ${loading ? 'bg-gray-800' : 'bg-black shadow-lg shadow-gray-200'}`}
+          className={`w-full py-4 rounded-xl mb-8 items-center ${loading ? 'bg-mocha' : 'bg-espresso'
+            }`}
         >
           {loading ? (
-            <Text>Generating Image...</Text>
+            <Text className="text-ivory">Generating Image...</Text>
           ) : (
-            <Text className="text-white font-bold text-lg">Try It On ✨</Text>
+            <Text className="text-ivory font-bold text-lg">Try It On ✨</Text>
           )}
         </TouchableOpacity>
 
         {resultImage && (
           <View className="items-center mb-10">
-            <View className="w-full h-[1px] bg-gray-200 mb-6" />
-            <Text className="text-xl font-bold text-gray-800 mb-4">Your Look</Text>
-            
-            <View className="w-full h-80 rounded-2xl overflow-hidden shadow-sm bg-gray-50 mb-4">
-              <Image 
-                source={{ uri: resultImage }} 
-                className="w-full h-full" 
-                resizeMode="contain" 
+            <View className="w-full h-[1px] bg-sand mb-6" />
+            <Text className="text-xl font-bold text-espresso mb-4">
+              Your Look
+            </Text>
+            <View className="w-full h-80 rounded-2xl overflow-hidden bg-white border border-sand mb-4">
+              <Image
+                source={{ uri: resultImage }}
+                className="w-full h-full"
+                resizeMode="contain"
               />
             </View>
-
-            <TouchableOpacity 
+            <TouchableOpacity
               onPress={handleDownload}
-              className="flex-row items-center bg-gray-900 px-6 py-3 rounded-full"
+              className="flex-row items-center bg-terracotta px-6 py-3 rounded-full"
             >
-              <Text className="text-white font-semibold">Save to Gallery ⬇</Text>
+              <Text className="text-ivory font-semibold">
+                Save to Gallery ⬇
+              </Text>
             </TouchableOpacity>
           </View>
         )}
