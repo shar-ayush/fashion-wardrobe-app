@@ -41,7 +41,7 @@ It also includes:
 *   **Semantic Smart Search**
     
 
-❗ Problem Statement
+Problem Statement
 -------------------
 
 Managing a physical wardrobe is inefficient and mentally taxing.
@@ -61,7 +61,7 @@ Managing a physical wardrobe is inefficient and mentally taxing.
 *   Generic styling suggestions not tailored to user-owned items
     
 
-💡 Solution
+Solution
 -----------
 
 Outfit AI solves these problems using **automation + AI + intelligent logic systems**:
@@ -208,7 +208,16 @@ Features
 API Design
 -------------
 
-EndpointMethodDescription/api/auth/registerPOSTRegister user/api/auth/loginPOSTLogin user/api/upload-to-closetPOSTUpload & process clothing/api/outfit-maker/generatePOSTGenerate outfit/api/try-onPOSTVirtual try-on/api/smart-searchGETSemantic search
+| Endpoint                         | Method | Purpose                                                                 |
+|----------------------------------|--------|-------------------------------------------------------------------------|
+| `/api/auth/register`            | POST   | Hashes password and registers a new user                                |
+| `/api/auth/login`               | POST   | Validates bcrypt hash and returns JWT token                             |
+| `/api/upload-to-closet`         | POST   | Accepts multipart/form-data, removes background, tags with AI, saves to DB |
+| `/api/upload-to-closet?userId=X`| GET    | Fetches all parsed closet items for a specific user                     |
+| `/api/outfit-maker/generate`    | POST   | Takes query, scores wardrobe, triggers LLM, returns best outfit         |
+| `/api/try-on`                   | POST   | Sends images to Virtual Try-On API and returns synthesized output       |
+| `/api/smart-search`             | GET    | Performs semantic search using embeddings + cosine similarity           |
+
 
 
 
