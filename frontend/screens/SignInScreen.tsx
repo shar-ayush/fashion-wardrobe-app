@@ -1,12 +1,12 @@
-import { 
-    StyleSheet, 
-    Text, 
-    TextInput, 
-    TouchableOpacity, 
-    View, 
-    KeyboardAvoidingView, 
-    ScrollView, // Import ScrollView
-    Platform, // Import Platform
+import {
+    StyleSheet,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    View,
+    KeyboardAvoidingView,
+    ScrollView,
+    Platform,
     Alert
 } from 'react-native'
 import React from 'react'
@@ -18,10 +18,10 @@ const SignInScreen = () => {
     const navigation = useNavigation();
     const [email, setEmail] = React.useState('');
     const [password, setPassword] = React.useState('');
-    const {login} = useAuthStore();
+    const { login } = useAuthStore();
 
     const handleSignin = async () => {
-        if(!email || !password){
+        if (!email || !password) {
             Alert.alert('Error', 'Please fill all required fields');
             return;
         }
@@ -34,47 +34,73 @@ const SignInScreen = () => {
     }
 
     return (
-        <SafeAreaView className='flex-1 bg-white'>
-            <KeyboardAvoidingView 
-                
-                behavior={Platform.OS === 'ios' ? 'padding' : 'height'} 
+        <SafeAreaView className='flex-1 bg-ivory'>
+            <KeyboardAvoidingView
+                behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
                 className="flex-1"
             >
-                <ScrollView 
-                    contentContainerStyle={{ flexGrow: 1, justifyContent: 'center' }} 
-                    keyboardShouldPersistTaps="handled" // Ensures button taps register while keyboard is open
-                    className="p-4"
+                <ScrollView
+                    contentContainerStyle={{ flexGrow: 1, justifyContent: 'center' }}
+                    keyboardShouldPersistTaps="handled"
+                    className="px-6"
                 >
-                    <Text className='text-2xl font-bold text-center mb-6'>SignIn</Text>
-                    
+                    {/* APP NAME */}
+                    <Text className='text-center text-taupe tracking-[4px] text-xs mb-2'>
+                        WELCOME TO
+                    </Text>
+                    <Text className='text-4xl font-extrabold text-center text-espresso mb-8'>
+                        Outfit AI
+                    </Text>
+
+                    {/* TITLE */}
+                    <Text className='text-xl font-semibold text-espresso text-center mb-6'>
+                        Sign In
+                    </Text>
+
+                    {/* EMAIL */}
                     <TextInput
-                        className='border border-gray-300 p-3 mb-4 rounded-lg'
+                        className='bg-white border border-sand p-4 mb-4 rounded-xl text-espresso'
                         value={email}
                         onChangeText={setEmail}
                         placeholder="Email"
+                        placeholderTextColor="#a89880"
                         autoCapitalize="none"
                         keyboardType="email-address"
                     />
 
+                    {/* PASSWORD */}
                     <TextInput
-                        className='border border-gray-300 p-3 mb-4 rounded-lg'
+                        className='bg-white border border-sand p-4 mb-6 rounded-xl text-espresso'
                         value={password}
                         onChangeText={setPassword}
                         placeholder="Password"
+                        placeholderTextColor="#a89880"
                         secureTextEntry
                     />
 
-                    <TouchableOpacity onPress={handleSignin} className='bg-blue-500 p-3 rounded-lg mb-4'>
-                        <Text className='text-white text-center text-lg'>Sign In</Text>
-                    </TouchableOpacity>
-
-                    <TouchableOpacity 
-                    //@ts-ignore
-                    onPress={() => navigation.navigate('SignUp')}>
-                        <Text className='text-blue-500 text-center text-lg'>
-                            Don't have an account? Sign Up
+                    {/* BUTTON */}
+                    <TouchableOpacity
+                        onPress={handleSignin}
+                        className='bg-espresso py-4 rounded-xl mb-4 items-center'
+                    >
+                        <Text className='text-ivory text-lg font-bold tracking-[2px]'>
+                            SIGN IN
                         </Text>
                     </TouchableOpacity>
+
+                    {/* SIGNUP */}
+                    <TouchableOpacity
+                        //@ts-ignore
+                        onPress={() => navigation.navigate('SignUp')}
+                    >
+                        <Text className='text-center text-mocha'>
+                            Don't have an account?{" "}
+                            <Text className='text-terracotta font-semibold'>
+                                Sign Up
+                            </Text>
+                        </Text>
+                    </TouchableOpacity>
+
                 </ScrollView>
             </KeyboardAvoidingView>
         </SafeAreaView>
